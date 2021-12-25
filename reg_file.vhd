@@ -29,23 +29,24 @@ begin
 	process (clk)
 	begin
 		if rising_edge(clk) then
-			if addr1 = "000" then
-				rdata1 <= reg0;
-			elsif addr1 = "001" then
-				rdata1 <= reg1;
-			elsif addr1 = "010" then
-				rdata1 <= reg2;
-			elsif addr1 = "011" then
-				rdata1 <= reg3;
-			elsif addr1 = "100" then
-				rdata1 <= reg4;
-			elsif addr1 = "101" then
-				rdata1 <= reg5;
-			elsif addr1 = "110" then
-				rdata1 <= reg6;
-			elsif addr1 = "111" then
-				rdata1 <= reg7;
-			end if;
+			case addr1 is
+				when "000" =>
+					rdata1 <= reg0;
+				when "001" =>
+					rdata1 <= reg1;
+				when "010" =>
+					rdata1 <= reg2;
+				when "011" =>
+					rdata1 <= reg3;
+				when "100" =>
+					rdata1 <= reg4;
+				when "101" =>
+					rdata1 <= reg5;
+				when "110" =>
+					rdata1 <= reg6;
+				when others =>
+					rdata1 <= reg7;
+			end case;
 		end if;
 	end process;
 
@@ -53,23 +54,24 @@ begin
 	process (clk)
 	begin
 		if rising_edge(clk) then
-			if addr2 = "000" then
-				rdata2 <= reg0;
-			elsif addr2 = "001" then
-				rdata2 <= reg1;
-			elsif addr2 = "010" then
-				rdata2 <= reg2;
-			elsif addr2 = "011" then
-				rdata2 <= reg3;
-			elsif addr2 = "100" then
-				rdata2 <= reg4;
-			elsif addr2 = "101" then
-				rdata2 <= reg5;
-			elsif addr2 = "110" then
-				rdata2 <= reg6;
-			elsif addr2 = "111" then
-				rdata2 <= reg7;
-			end if;
+			case addr2 is
+				when "000" =>
+					rdata2 <= reg0;
+				when "001" =>
+					rdata2 <= reg1;
+				when "010" =>
+					rdata2 <= reg2;
+				when "011" =>
+					rdata2 <= reg3;
+				when "100" =>
+					rdata2 <= reg4;
+				when "101" =>
+					rdata2 <= reg5;
+				when "110" =>
+					rdata2 <= reg6;
+				when others =>
+					rdata2 <= reg7;
+			end case;
 		end if;
 	end process;
 
@@ -78,23 +80,24 @@ begin
 	begin
 		if rising_edge(not_clk) then
 			if wren = '1' then
-				if waddr = "000" then
-					reg0 <= wdata;
-				elsif waddr = "001" then
-					reg1 <= wdata;
-				elsif waddr = "010" then
-					reg2 <= wdata;
-				elsif waddr = "011" then
-					reg3 <= wdata;
-				elsif waddr = "100" then
-					reg4 <= wdata;
-				elsif waddr = "101" then
-					reg5 <= wdata;
-				elsif waddr = "110" then
-					reg6 <= wdata;
-				elsif waddr = "111" then
-					reg7 <= wdata;
-				end if;
+				case waddr is
+					when "000" =>
+						reg0 <= wdata;
+					when "001" =>
+						reg1 <= wdata;
+					when "010" =>
+						reg2 <= wdata;
+					when "011" =>
+						reg3 <= wdata;
+					when "100" =>
+						reg4 <= wdata;
+					when "101" =>
+						reg5 <= wdata;
+					when "110" =>
+						reg6 <= wdata;
+					when others =>
+						reg7 <= wdata;
+				end case;
 			end if;
 		end if;
 	end process;

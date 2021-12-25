@@ -10,7 +10,7 @@ entity cpu is
 	);
 end cpu;
 architecture cpu of cpu is
-	signal inst_memo : std_logic_vector(31 downto 0);--inptut from instruction memory (temporary)
+	signal inst_memo : std_logic_vector(31 downto 0);--input from instruction memory (temporary)
 	signal stage1_reg : std_logic_vector(127 downto 0);--f/d
 	signal stage2_reg : std_logic_vector(127 downto 0);--d/e
 	signal stage3_reg : std_logic_vector(127 downto 0);--e/m
@@ -34,6 +34,21 @@ begin
 	reg_file : entity work.reg_file port map(clk, stage1_reg(12 downto 10), stage1_reg(15 downto 13), stage4_reg(39 downto 37), wb_data, stage4_reg(14), stage2_reg(55 downto 40), stage2_reg(71 downto 56));
 
 	--decode-execute-buffer
+	
+	ID_EX_BUFFER: entity work.ID_EX_Buffer port map (
+		clk				=>clk;
+		inCS         	=>;
+		inG          	=>;
+		inRdst_index 	=>;
+		inRsrc_data1 	=>;
+		inRsrc_data2 	=>;
+		inImm        	=>;
+		inInt_index  	=>;
+		inRsrc1_index	=>;
+		inRsrc2_index	=>;
+		inPC         	=>;
+		);
+	
 	process (clk)
 	begin
 		if rising_edge(clk) then
