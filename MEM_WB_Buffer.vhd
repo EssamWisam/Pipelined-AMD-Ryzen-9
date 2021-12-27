@@ -48,10 +48,10 @@ begin
 --   process (clk)
 -- 	begin
 -- 		if falling_edge(clk) then
-            outCS           <= CS           ;
-            outRdst_index   <= Rdst_index   ;
-            outResult       <= Result       ;
-            outData32       <= Data32       ;
+            outCS           <= CS         ;
+            outRdst_index   <= Rdst_index ;
+            outResult       <= Result     ;
+            outData32       <= Data32     ;
 --		end if;
         
 --	end process;

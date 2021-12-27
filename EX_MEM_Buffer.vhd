@@ -18,9 +18,9 @@ entity EX_MEM_Buffer is
     inPC            : in std_logic_vector   (31 downto 0);
 
     outCS           : out std_logic_vector   (27 downto 0);
-    outRdst_index   : out std_logic_vector   (2  downto 0);
     outRsrc_data1   : out std_logic_vector   (15 downto 0);
     outResult       : out std_logic_vector   (15 downto 0);
+    outRdst_index   : out std_logic_vector   (2  downto 0);
     outInt_index    : out std_logic_vector   (1  downto 0);
     outPC           : out std_logic_vector   (31 downto 0 )
     --outG            : out std_logic_vector   (27 downto 0);
@@ -34,15 +34,15 @@ architecture EX_MEM of EX_MEM_Buffer is
 
     signal not_clk       : std_logic                       ;
     signal CS            : std_logic_vector   (27 downto 0);
-    signal G1            : std_logic_vector   (27 downto 0);
     signal Rdst_index    : std_logic_vector   (2  downto 0);
     signal Rsrc_data1    : std_logic_vector   (15 downto 0);
-    signal G2            : std_logic_vector   (15 downto 0);
     signal Result        : std_logic_vector   (15 downto 0);
     signal Int_index     : std_logic_vector   (1  downto 0);
+    signal PC            : std_logic_vector   (31 downto 0);
     signal Rsrc1_index   : std_logic_vector   (2  downto 0);
     signal Rsrc2_index   : std_logic_vector   (2  downto 0);
-    signal PC            : std_logic_vector   (31 downto 0);
+    signal G1            : std_logic_vector   (27 downto 0);
+    signal G2            : std_logic_vector   (15 downto 0);
 
 begin
   --process (clk)
@@ -64,15 +64,15 @@ begin
 	begin
 		if rising_edge(clk) then
             CS           <= inCS         ;
-            G1           <= inG1         ;
             Rdst_index   <= inRdst_index ;
             Rsrc_data1   <= inRsrc_data1 ;
-            G2           <= inG2         ;
-            Result       <= inResult     ;
             Int_index    <= inInt_index  ;
+            Result       <= inResult     ;
+            PC           <= inPC         ;        
             Rsrc1_index  <= inRsrc1_index;
             Rsrc2_index  <= inRsrc2_index;
-            PC           <= inPC         ;        
+            G2           <= inG2         ;
+            G1           <= inG1         ;
 		end if;
         
 	end process;

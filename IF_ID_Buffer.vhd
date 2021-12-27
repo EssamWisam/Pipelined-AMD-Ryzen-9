@@ -35,9 +35,9 @@ architecture IF_ID of IF_ID_Buffer is
     signal PC            : std_logic_vector   (31 downto 0);
 
 begin
-  process (clk)
-	begin
-		if falling_edge(clk) then
+  -- process (clk)
+	-- begin
+	-- 	if falling_edge(clk) then
             outOpCode       <= opCode     ;
             outImm          <= Imm        ;
             outRdst_index   <= Rdst_index ;
@@ -45,9 +45,9 @@ begin
             outRsrc2_index  <= Rsrc2_index;
             outInt_index    <= Int_index  ;
             outPC           <= PC;        
-		end if;
+		-- end if;
         
-	end process;
+	-- end process;
   process (clk)
 	begin
 		if rising_edge(clk) then

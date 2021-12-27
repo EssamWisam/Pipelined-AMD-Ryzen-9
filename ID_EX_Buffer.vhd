@@ -46,9 +46,9 @@ architecture ID_EX of ID_EX_Buffer is
     signal PC            : std_logic_vector   (31 downto 0);
 
 begin
-  process (clk)
-	begin
-		if falling_edge(clk) then
+  -- process (clk)
+	-- begin
+	-- 	if falling_edge(clk) then
             outCS           <= CS         ;
             outG            <= G          ;
             outRdst_index   <= Rdst_index ;
@@ -59,9 +59,9 @@ begin
             outRsrc1_index  <= Rsrc1_index;
             outRsrc2_index  <= Rsrc2_index;
             outPC           <= PC         ;        
-		end if;
+		-- end if;
         
-	end process;
+	-- end process;
   process (clk)
 	begin
 		if rising_edge(clk) then
