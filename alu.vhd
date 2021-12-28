@@ -1,36 +1,44 @@
-library ieee;
-use ieee.std_logic_1164.all;
-use ieee.numeric_std.all;
-entity alu is
-	port (
-		clk : in std_logic;
-		a : in std_logic_vector(15 downto 0);
-		b : in std_logic_vector(15 downto 0);
-		op : in std_logic_vector(2 downto 0);
-		result : out std_logic_vector(15 downto 0)
+LIBRARY ieee;
+USE ieee.std_logic_1164.ALL;
+USE ieee.numeric_std.ALL;
+ENTITY alu IS
+	PORT (
+		clk : IN STD_LOGIC;--faling edge
+		a : IN STD_LOGIC_VECTOR(15 DOWNTO 0);
+		b : IN STD_LOGIC_VECTOR(15 DOWNTO 0);
+		op : IN STD_LOGIC_VECTOR(2 DOWNTO 0);
+		result : OUT STD_LOGIC_VECTOR(15 DOWNTO 0)
 	);
-end alu;
-architecture alu of alu is
-begin
-	process (clk)
-	begin
-		if rising_edge(clk) then
-			if op = "000" then
-				result <= a;
-			elsif op = "001" then
-				result <= b;
-			elsif op = "010" then
-				result <= a and b;
-			elsif op = "011" then
-				result <= std_logic_vector(unsigned(a) + unsigned(b));
-			elsif op = "100" then
-				result <= std_logic_vector(unsigned(a) - unsigned(b));
-			elsif op = "101" then
-				result <= std_logic_vector(unsigned(a) + 1);
+END alu;
+ARCHITECTURE alu OF alu IS
+	SIGNAL result_reg : STD_LOGIC_VECTOR(15 DOWNTO 0);
+	SIGNAL not_clk : STD_LOGIC;
+BEGIN
+	--logic
+	not_clk <= NOT clk;
+	PROCESS (clk)
+	BEGIN
+		--TODO:add flag register logic
+		IF rising_edge(clk) THEN
+			IF op = "000" THEN
+				result_reg <= a;
+			ELSIF op = "001" THEN
+				result_reg <= b;
+			ELSIF op = "010" THEN
+				result_reg <= a AND b;
+			ELSIF op = "011" THEN
+				result_reg <= STD_LOGIC_VECTOR(unsigned(a) + unsigned(b));
+			ELSIF op = "100" THEN
+				result_reg <= STD_LOGIC_VECTOR(unsigned(a) - unsigned(b));
+			ELSIF op = "101" THEN
+				result_reg <= STD_LOGIC_VECTOR(unsigned(a) + 1);
 				-- add set carry
-			elsif op = "111" then
-				result <= not a;
-			end if;
-		end if;
-	end process;
-end alu;
+			ELSIF op = "111" THEN
+				result_reg <= NOT a;
+			END IF;
+		END IF;
+	END PROCESS;
+	--out
+	result <= result_reg;
+
+END alu;

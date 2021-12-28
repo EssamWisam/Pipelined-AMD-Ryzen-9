@@ -1,101 +1,87 @@
-library ieee;
-use ieee.std_logic_1164.all;
-use ieee.numeric_std.all;
-entity reg_file is
-	port (
-		clk : in std_logic;
-		addr1 : in std_logic_vector(2 downto 0);
-		addr2 : in std_logic_vector(2 downto 0);
-		waddr : in std_logic_vector(2 downto 0);
-		wdata : in std_logic_vector(15 downto 0);
-		wren : in std_logic;
-		rdata1 : out std_logic_vector(15 downto 0);
-		rdata2 : out std_logic_vector(15 downto 0)
+LIBRARY ieee;
+USE ieee.std_logic_1164.ALL;
+USE ieee.numeric_std.ALL;
+ENTITY reg_file IS
+	PORT (
+		clk : IN STD_LOGIC;--falling edge
+		rst : IN STD_LOGIC;
+		addr1 : IN STD_LOGIC_VECTOR(2 DOWNTO 0);
+		addr2 : IN STD_LOGIC_VECTOR(2 DOWNTO 0);
+		waddr : IN STD_LOGIC_VECTOR(2 DOWNTO 0);
+		wdata : IN STD_LOGIC_VECTOR(15 DOWNTO 0);
+		wren : IN STD_LOGIC;
+		rdata1 : OUT STD_LOGIC_VECTOR(15 DOWNTO 0);
+		rdata2 : OUT STD_LOGIC_VECTOR(15 DOWNTO 0)
 	);
-end reg_file;
-architecture reg_file of reg_file is
-	signal not_clk : std_logic;
-	signal reg0 : std_logic_vector(15 downto 0);
-	signal reg1 : std_logic_vector(15 downto 0);
-	signal reg2 : std_logic_vector(15 downto 0);
-	signal reg3 : std_logic_vector(15 downto 0);
-	signal reg4 : std_logic_vector(15 downto 0);
-	signal reg5 : std_logic_vector(15 downto 0);
-	signal reg6 : std_logic_vector(15 downto 0);
-	signal reg7 : std_logic_vector(15 downto 0);
-begin
-	not_clk <= not clk;
-	--data1
-	process (clk)
-	begin
-		if rising_edge(clk) then
-			if addr1 = "000" then
-				rdata1 <= reg0;
-			elsif addr1 = "001" then
-				rdata1 <= reg1;
-			elsif addr1 = "010" then
-				rdata1 <= reg2;
-			elsif addr1 = "011" then
-				rdata1 <= reg3;
-			elsif addr1 = "100" then
-				rdata1 <= reg4;
-			elsif addr1 = "101" then
-				rdata1 <= reg5;
-			elsif addr1 = "110" then
-				rdata1 <= reg6;
-			elsif addr1 = "111" then
-				rdata1 <= reg7;
-			end if;
-		end if;
-	end process;
-
-	--data2
-	process (clk)
-	begin
-		if rising_edge(clk) then
-			if addr2 = "000" then
-				rdata2 <= reg0;
-			elsif addr2 = "001" then
-				rdata2 <= reg1;
-			elsif addr2 = "010" then
-				rdata2 <= reg2;
-			elsif addr2 = "011" then
-				rdata2 <= reg3;
-			elsif addr2 = "100" then
-				rdata2 <= reg4;
-			elsif addr2 = "101" then
-				rdata2 <= reg5;
-			elsif addr2 = "110" then
-				rdata2 <= reg6;
-			elsif addr2 = "111" then
-				rdata2 <= reg7;
-			end if;
-		end if;
-	end process;
+END reg_file;
+ARCHITECTURE reg_file OF reg_file IS
+	SIGNAL reg0 : STD_LOGIC_VECTOR(15 DOWNTO 0);
+	SIGNAL reg1 : STD_LOGIC_VECTOR(15 DOWNTO 0);
+	SIGNAL reg2 : STD_LOGIC_VECTOR(15 DOWNTO 0);
+	SIGNAL reg3 : STD_LOGIC_VECTOR(15 DOWNTO 0);
+	SIGNAL reg4 : STD_LOGIC_VECTOR(15 DOWNTO 0);
+	SIGNAL reg5 : STD_LOGIC_VECTOR(15 DOWNTO 0);
+	SIGNAL reg6 : STD_LOGIC_VECTOR(15 DOWNTO 0);
+	SIGNAL reg7 : STD_LOGIC_VECTOR(15 DOWNTO 0);
+BEGIN
+	--read data1
+	WITH addr1 SELECT
+		rdata1 <=
+		reg0 WHEN "000",
+		reg1 WHEN "001",
+		reg2 WHEN "010",
+		reg3 WHEN "011",
+		reg4 WHEN "100",
+		reg5 WHEN "101",
+		reg6 WHEN "110",
+		reg7 WHEN others;
+	--read data2
+	WITH addr2 SELECT
+		rdata2 <=
+		reg0 WHEN "000",
+		reg1 WHEN "001",
+		reg2 WHEN "010",
+		reg3 WHEN "011",
+		reg4 WHEN "100",
+		reg5 WHEN "101",
+		reg6 WHEN "110",
+		reg7 WHEN others;
 
 	--write back
-	process (not_clk)
-	begin
-		if rising_edge(not_clk) then
-			if wren = '1' then
-				if waddr = "000" then
-					reg0 <= wdata;
-				elsif waddr = "001" then
-					reg1 <= wdata;
-				elsif waddr = "010" then
-					reg2 <= wdata;
-				elsif waddr = "011" then
-					reg3 <= wdata;
-				elsif waddr = "100" then
-					reg4 <= wdata;
-				elsif waddr = "101" then
-					reg5 <= wdata;
-				elsif waddr = "110" then
-					reg6 <= wdata;
-				elsif waddr = "111" then
-					reg7 <= wdata;
-				end if;
-			end if;
-		end if;
-	end process;
-end reg_file;
+	PROCESS (clk)
+	BEGIN
+		IF rising_edge(clk) THEN
+			--reset
+			IF rst = '1' THEN
+				reg0 <= x"0000";
+				reg1 <= x"0000";
+				reg2 <= x"0000";
+				reg3 <= x"0000";
+				reg4 <= x"0000";
+				reg5 <= x"0000";
+				reg6 <= x"0000";
+				reg7 <= x"0000";
+			ELSE
+				IF wren = '1' THEN
+					IF waddr = "000" THEN
+						reg0 <= wdata;
+					ELSIF waddr = "001" THEN
+						reg1 <= wdata;
+					ELSIF waddr = "010" THEN
+						reg2 <= wdata;
+					ELSIF waddr = "011" THEN
+						reg3 <= wdata;
+					ELSIF waddr = "100" THEN
+						reg4 <= wdata;
+					ELSIF waddr = "101" THEN
+						reg5 <= wdata;
+					ELSIF waddr = "110" THEN
+						reg6 <= wdata;
+					ELSIF waddr = "111" THEN
+						reg7 <= wdata;
+					END IF;
+				END IF;
+			END IF;
+		END IF;
+	END PROCESS;
+END reg_file;

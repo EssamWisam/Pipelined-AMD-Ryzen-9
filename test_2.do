@@ -12,6 +12,10 @@ add wave -position end  sim:/cpu/reg_file/reg6
 add wave -position end  sim:/cpu/reg_file/reg7
 
 force -freeze sim:/cpu/clk 0 0, 1 {50 ps} -r 100
+force -freeze sim:/cpu/reg_file/rst 1 0
+run
+force -freeze sim:/cpu/reg_file/rst 0 0
+
 force -freeze sim:/cpu/reg_file/reg1 X\"1\" 0
 force -freeze sim:/cpu/reg_file/reg2 X\"2\" 0
 force -freeze sim:/cpu/inst_memo 00000000000000000000010110010000 0
