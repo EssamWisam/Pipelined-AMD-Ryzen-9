@@ -21,13 +21,15 @@ ARCHITECTURE data_memory OF data_memory IS
 BEGIN
 	data_out_16 <= data_16_reg;
 	data_out_32 <= data_32_reg;
-
 	--read form memory
 	PROCESS (clk)
 	BEGIN
 		IF rising_edge(clk) THEN
-			--data_32_reg <= ram_data(to_integer(unsigned(addr))) & ram_data(to_integer(unsigned(addr) + 1));--little endian
 			data_16_reg <= ram_data(to_integer(unsigned(addr)));
+			IF is_32_bit = '1' THEN
+				data_32_reg(31 DOWNTO 16) <= ram_data(to_integer(unsigned(addr)));--upper endian
+				data_32_reg(15 DOWNTO 0) <= ram_data(to_integer(unsigned(addr)) - 1);
+			END IF;
 		END IF;
 	END PROCESS;
 
@@ -37,8 +39,8 @@ BEGIN
 		IF rising_edge(clk) THEN
 			IF write_en = '1' THEN
 				IF is_32_bit = '1' THEN
-					ram_data(to_integer(unsigned(addr))) <= data_in_32(31 DOWNTO 16);--little endian
-					ram_data(to_integer(unsigned(addr) + 1)) <= data_in_32(15 DOWNTO 0);
+					ram_data(to_integer(unsigned(addr))) <= data_in_32(31 DOWNTO 16);--upper endian
+					ram_data(to_integer(unsigned(addr)) - 1) <= data_in_32(15 DOWNTO 0);
 				ELSE
 					ram_data(to_integer(unsigned(addr))) <= data_in_16;
 				END IF;
