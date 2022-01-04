@@ -10,14 +10,19 @@ add wave -position end  sim:/cpu/reg_file/reg4
 add wave -position end  sim:/cpu/reg_file/reg5
 add wave -position end  sim:/cpu/reg_file/reg6
 add wave -position end  sim:/cpu/reg_file/reg7
+add wave -position end  sim:/cpu/flag_out
+add wave -position end  sim:/cpu/flag_en
+
 
 force -freeze sim:/cpu/clk 0 0, 1 {50 ps} -r 100
 force -freeze sim:/cpu/reg_file/rst 1 0
 run
 force -freeze sim:/cpu/reg_file/rst 0 0
+force -freeze sim:/cpu/flag_en 1 0
 
-force -freeze sim:/cpu/reg_file/reg1 X\"1\" 0
-force -freeze sim:/cpu/reg_file/reg2 X\"2\" 0
+
+force -freeze sim:/cpu/reg_file/reg1 X\"FFFF\" 0
+force -freeze sim:/cpu/reg_file/reg2 X\"FFFF\" 0
 force -freeze sim:/cpu/inst_memo 00000000000000000000010110010000 0
 run
 force -freeze sim:/cpu/inst_memo 00000000000000000100011000010001 0
@@ -34,3 +39,13 @@ run
 run
 run
 run
+#Test 1:
+#intially
+#R1 = 1
+#R2 = 2
+#MOV R3, R1
+#ADD R4, R1, R2
+#AND R5, R1, R2
+#ADDI R6, R1, 15
+#SUB R7, R2, R1
+#INC R1

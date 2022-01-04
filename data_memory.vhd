@@ -1,50 +1,50 @@
-LIBRARY ieee;
-USE ieee.std_logic_1164.ALL;
-USE ieee.numeric_std.ALL;
-ENTITY data_memory IS
-	PORT (
-		clk : IN STD_LOGIC;--falling edge
-		write_en : IN STD_LOGIC;
-		addr : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
-		is_32_bit : IN STD_LOGIC;
-		data_in_16 : IN STD_LOGIC_VECTOR(15 DOWNTO 0);
-		data_in_32 : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
-		data_out_16 : OUT STD_LOGIC_VECTOR(15 DOWNTO 0);
-		data_out_32 : OUT STD_LOGIC_VECTOR(31 DOWNTO 0)
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
+entity data_memory is
+	port (
+		clk : in std_logic;--falling edge
+		write_en : in std_logic;
+		addr : in std_logic_vector(31 downto 0);
+		is_32_bit : in std_logic;
+		data_in_16 : in std_logic_vector(15 downto 0);
+		data_in_32 : in std_logic_vector(31 downto 0);
+		data_out_16 : out std_logic_vector(15 downto 0);
+		data_out_32 : out std_logic_vector(31 downto 0)
 	);
-END data_memory;
-ARCHITECTURE data_memory OF data_memory IS
-	TYPE ram_type IS ARRAY (0 TO 2 ** 20 - 1) OF STD_LOGIC_VECTOR(15 DOWNTO 0);
-	SIGNAL ram_data : ram_type;
-	SIGNAL data_16_reg : STD_LOGIC_VECTOR(15 DOWNTO 0);
-	SIGNAL data_32_reg : STD_LOGIC_VECTOR(31 DOWNTO 0);
-BEGIN
+end data_memory;
+architecture data_memory of data_memory is
+	type ram_type is array (0 to 2 ** 20 - 1) of std_logic_vector(15 downto 0);
+	signal ram_data : ram_type;
+	signal data_16_reg : std_logic_vector(15 downto 0);
+	signal data_32_reg : std_logic_vector(31 downto 0);
+begin
 	data_out_16 <= data_16_reg;
 	data_out_32 <= data_32_reg;
 	--read form memory
-	PROCESS (clk)
-	BEGIN
-		IF rising_edge(clk) THEN
+	process (clk)
+	begin
+		if rising_edge(clk) then
 			data_16_reg <= ram_data(to_integer(unsigned(addr)));
-			IF is_32_bit = '1' THEN
-				data_32_reg(31 DOWNTO 16) <= ram_data(to_integer(unsigned(addr)));--upper endian
-				data_32_reg(15 DOWNTO 0) <= ram_data(to_integer(unsigned(addr)) - 1);
-			END IF;
-		END IF;
-	END PROCESS;
+			if is_32_bit = '1' then
+				data_32_reg(31 downto 16) <= ram_data(to_integer(unsigned(addr)));--upper endian
+				data_32_reg(15 downto 0) <= ram_data(to_integer(unsigned(addr)) - 1);
+			end if;
+		end if;
+	end process;
 
 	--write to memory
-	PROCESS (clk)
-	BEGIN
-		IF rising_edge(clk) THEN
-			IF write_en = '1' THEN
-				IF is_32_bit = '1' THEN
-					ram_data(to_integer(unsigned(addr))) <= data_in_32(31 DOWNTO 16);--upper endian
-					ram_data(to_integer(unsigned(addr)) - 1) <= data_in_32(15 DOWNTO 0);
-				ELSE
+	process (clk)
+	begin
+		if rising_edge(clk) then
+			if write_en = '1' then
+				if is_32_bit = '1' then
+					ram_data(to_integer(unsigned(addr))) <= data_in_32(31 downto 16);--upper endian
+					ram_data(to_integer(unsigned(addr)) - 1) <= data_in_32(15 downto 0);
+				else
 					ram_data(to_integer(unsigned(addr))) <= data_in_16;
-				END IF;
-			END IF;
-		END IF;
-	END PROCESS;
-END data_memory;
+				end if;
+			end if;
+		end if;
+	end process;
+end data_memory;

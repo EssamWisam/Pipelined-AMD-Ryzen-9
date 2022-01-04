@@ -1,46 +1,46 @@
-LIBRARY ieee;
-USE ieee.std_logic_1164.ALL;
-USE ieee.numeric_std.ALL;
-ENTITY stack_module IS
-	PORT (
-		clk : IN STD_LOGIC;--rising edge
-		rst : IN STD_LOGIC;
-		operation : IN STD_LOGIC_VECTOR(2 DOWNTO 0);
-		address : OUT STD_LOGIC_VECTOR(31 DOWNTO 0)
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
+entity stack_module is
+	port (
+		clk : in std_logic;--rising edge
+		rst : in std_logic;
+		operation : in std_logic_vector(2 downto 0);
+		address : out std_logic_vector(31 downto 0)
 	);
-END stack_module;
+end stack_module;
 
-ARCHITECTURE stack_module OF stack_module IS
-	SIGNAL address_reg : STD_LOGIC_VECTOR(31 DOWNTO 0);
-	SIGNAL address_reg_temp_pop : STD_LOGIC_VECTOR(31 DOWNTO 0);
-BEGIN
+architecture stack_module of stack_module is
+	signal address_reg : std_logic_vector(31 downto 0);
+	signal address_reg_temp_pop : std_logic_vector(31 downto 0);
+begin
 	--stack pointer logic
-	PROCESS (clk)
-	BEGIN
-		IF rising_edge(clk) THEN
-			IF rst = '1' THEN
-				address_reg <= x"000FFFFF";
-			ELSE
-				IF operation = "001" THEN
+	process (clk)
+	begin
+		if rising_edge(clk) then
+			if rst = '1' then
+				address_reg <= x"000fffff";
+			else
+				if operation = "001" then
 					address_reg_temp_pop <= address_reg;
-					address_reg <= STD_LOGIC_VECTOR(unsigned(address_reg) + 1);
-				ELSIF operation = "010" THEN
+					address_reg <= std_logic_vector(unsigned(address_reg) + 1);
+				elsif operation = "010" then
 					address_reg_temp_pop <= address_reg;
-					address_reg <= STD_LOGIC_VECTOR(unsigned(address_reg) - 1);
-				ELSIF operation = "011" THEN
+					address_reg <= std_logic_vector(unsigned(address_reg) - 1);
+				elsif operation = "011" then
 					address_reg_temp_pop <= address_reg;
-					address_reg <= STD_LOGIC_VECTOR(unsigned(address_reg) + 2);
-				ELSIF operation = "100" THEN
+					address_reg <= std_logic_vector(unsigned(address_reg) + 2);
+				elsif operation = "100" then
 					address_reg_temp_pop <= address_reg;
-					address_reg <= STD_LOGIC_VECTOR(unsigned(address_reg) - 2);
-				END IF;
-			END IF;
-		END IF;
-	END PROCESS;
+					address_reg <= std_logic_vector(unsigned(address_reg) - 2);
+				end if;
+			end if;
+		end if;
+	end process;
 	--out
-	WITH operation SELECT
+	with operation select
 		address <=
-		address_reg WHEN "010",
-		address_reg WHEN "100",
-		address_reg_temp_pop WHEN OTHERS;
-END stack_module;
+		address_reg when "010",
+		address_reg when "100",
+		address_reg_temp_pop when others;
+end stack_module;

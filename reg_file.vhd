@@ -1,58 +1,58 @@
-LIBRARY ieee;
-USE ieee.std_logic_1164.ALL;
-USE ieee.numeric_std.ALL;
-ENTITY reg_file IS
-	PORT (
-		clk : IN STD_LOGIC;--falling edge
-		rst : IN STD_LOGIC;
-		addr1 : IN STD_LOGIC_VECTOR(2 DOWNTO 0);
-		addr2 : IN STD_LOGIC_VECTOR(2 DOWNTO 0);
-		waddr : IN STD_LOGIC_VECTOR(2 DOWNTO 0);
-		wdata : IN STD_LOGIC_VECTOR(15 DOWNTO 0);
-		wren : IN STD_LOGIC;
-		rdata1 : OUT STD_LOGIC_VECTOR(15 DOWNTO 0);
-		rdata2 : OUT STD_LOGIC_VECTOR(15 DOWNTO 0)
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
+entity reg_file is
+	port (
+		clk : in std_logic;--falling edge
+		rst : in std_logic;
+		addr1 : in std_logic_vector(2 downto 0);
+		addr2 : in std_logic_vector(2 downto 0);
+		waddr : in std_logic_vector(2 downto 0);
+		wdata : in std_logic_vector(15 downto 0);
+		wren : in std_logic;
+		rdata1 : out std_logic_vector(15 downto 0);
+		rdata2 : out std_logic_vector(15 downto 0)
 	);
-END reg_file;
-ARCHITECTURE reg_file OF reg_file IS
-	SIGNAL reg0 : STD_LOGIC_VECTOR(15 DOWNTO 0);
-	SIGNAL reg1 : STD_LOGIC_VECTOR(15 DOWNTO 0);
-	SIGNAL reg2 : STD_LOGIC_VECTOR(15 DOWNTO 0);
-	SIGNAL reg3 : STD_LOGIC_VECTOR(15 DOWNTO 0);
-	SIGNAL reg4 : STD_LOGIC_VECTOR(15 DOWNTO 0);
-	SIGNAL reg5 : STD_LOGIC_VECTOR(15 DOWNTO 0);
-	SIGNAL reg6 : STD_LOGIC_VECTOR(15 DOWNTO 0);
-	SIGNAL reg7 : STD_LOGIC_VECTOR(15 DOWNTO 0);
-BEGIN
+end reg_file;
+architecture reg_file of reg_file is
+	signal reg0 : std_logic_vector(15 downto 0);
+	signal reg1 : std_logic_vector(15 downto 0);
+	signal reg2 : std_logic_vector(15 downto 0);
+	signal reg3 : std_logic_vector(15 downto 0);
+	signal reg4 : std_logic_vector(15 downto 0);
+	signal reg5 : std_logic_vector(15 downto 0);
+	signal reg6 : std_logic_vector(15 downto 0);
+	signal reg7 : std_logic_vector(15 downto 0);
+begin
 	--read data1
-	WITH addr1 SELECT
+	with addr1 select
 		rdata1 <=
-		reg0 WHEN "000",
-		reg1 WHEN "001",
-		reg2 WHEN "010",
-		reg3 WHEN "011",
-		reg4 WHEN "100",
-		reg5 WHEN "101",
-		reg6 WHEN "110",
-		reg7 WHEN others;
+		reg0 when "000",
+		reg1 when "001",
+		reg2 when "010",
+		reg3 when "011",
+		reg4 when "100",
+		reg5 when "101",
+		reg6 when "110",
+		reg7 when others;
 	--read data2
-	WITH addr2 SELECT
+	with addr2 select
 		rdata2 <=
-		reg0 WHEN "000",
-		reg1 WHEN "001",
-		reg2 WHEN "010",
-		reg3 WHEN "011",
-		reg4 WHEN "100",
-		reg5 WHEN "101",
-		reg6 WHEN "110",
-		reg7 WHEN others;
+		reg0 when "000",
+		reg1 when "001",
+		reg2 when "010",
+		reg3 when "011",
+		reg4 when "100",
+		reg5 when "101",
+		reg6 when "110",
+		reg7 when others;
 
 	--write back
-	PROCESS (clk)
-	BEGIN
-		IF rising_edge(clk) THEN
+	process (clk)
+	begin
+		if rising_edge(clk) then
 			--reset
-			IF rst = '1' THEN
+			if rst = '1' then
 				reg0 <= x"0000";
 				reg1 <= x"0000";
 				reg2 <= x"0000";
@@ -61,27 +61,27 @@ BEGIN
 				reg5 <= x"0000";
 				reg6 <= x"0000";
 				reg7 <= x"0000";
-			ELSE
-				IF wren = '1' THEN
-					IF waddr = "000" THEN
+			else
+				if wren = '1' then
+					if waddr = "000" then
 						reg0 <= wdata;
-					ELSIF waddr = "001" THEN
+					elsif waddr = "001" then
 						reg1 <= wdata;
-					ELSIF waddr = "010" THEN
+					elsif waddr = "010" then
 						reg2 <= wdata;
-					ELSIF waddr = "011" THEN
+					elsif waddr = "011" then
 						reg3 <= wdata;
-					ELSIF waddr = "100" THEN
+					elsif waddr = "100" then
 						reg4 <= wdata;
-					ELSIF waddr = "101" THEN
+					elsif waddr = "101" then
 						reg5 <= wdata;
-					ELSIF waddr = "110" THEN
+					elsif waddr = "110" then
 						reg6 <= wdata;
-					ELSIF waddr = "111" THEN
+					elsif waddr = "111" then
 						reg7 <= wdata;
-					END IF;
-				END IF;
-			END IF;
-		END IF;
-	END PROCESS;
-END reg_file;
+					end if;
+				end if;
+			end if;
+		end if;
+	end process;
+end reg_file;
