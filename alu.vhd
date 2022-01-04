@@ -38,6 +38,8 @@ begin
 				result_reg <= std_logic_vector(unsigned(a) + 1);
 				flag_in(3) <= '1' when result = x"0000" else '0';					
 				flag_in(2) <= result(15);
+			elsif  op = "110" then		--setc
+				flag_in(1 downto 0) <= "01";
 			elsif op = "111" then		--not
 				result_reg <= not a;
 				flag_in(3) <= '1' when result = x"0000" else '0';					
