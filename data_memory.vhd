@@ -12,6 +12,7 @@ entity data_memory is
 		data_out_16 : out std_logic_vector(15 downto 0);
 		data_out_32 : out std_logic_vector(31 downto 0)
 	);
+	
 end data_memory;
 architecture data_memory of data_memory is
 	type ram_type is array (0 to 2 ** 20 - 1) of std_logic_vector(15 downto 0);
