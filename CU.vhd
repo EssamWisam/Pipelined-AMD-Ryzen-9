@@ -6,7 +6,6 @@ entity CU is
   port (
         clk : in std_logic ;
         inOpcode    : in std_logic_vector (6 downto 0);
-        inFlagReg   : in std_logic_vector (2 downto 0);
         outOpsrc    : out std_logic;
         outTFAOI    : out std_logic;
         outMEMW     : out std_logic;
@@ -78,21 +77,37 @@ begin
             "0000000000000100000000000001" when "1000011",  -- LDM
             "0000000000000100100000001101" when "0000100",  -- LDD
             "0000000000000000000010001101" when "0000101",  -- STD        
+            "0000000000000000000000000010" when "0001110",  -- IN
+            "0001000000000000000000000000" when "0001001",  -- HLT
+            "0000000000000000000000000000" when "0001000",  -- NOP
+            "0000000000000000000000011100" when "0001011",  -- NOT
+            "0000000000100010000000000000" when "0011000",  -- JZ
+            "0000000010100010000000000000" when "0011001",  -- JN
+            "0000000100100010000000000000" when "0011010",  -- JC
+            "0010000110100010000000000000" when "0011011",  -- JM
+            "0000001000100010000000000000" when "0011100",  -- CALL
+            "0000001010100001000000000000" when "0111101",  -- RET
+            "0000001110110001000000000000" when "0111111",  -- RTI
+            "0000001100101000000000000000" when "0011110",  -- INT
             (others=>'0')                when others;
-  
+    outOpsrc    <=CS(0);
+    outTFAOI    <=CS(1);
+    outALUOP    <=CS(4 downto 2);
+    outAddSrc   <=CS(6 downto 5);
+    outMEMW     <=CS(7);
+    outSPA      <=CS(10 downto 8);
+    outWF       <=CS(11);
+    outPCsrc    <=CS(13 downto 12);
+    outWB       <=CS(14);
+    outSaveF    <=CS(15);
+    outResF     <=CS(16);
+    outPCC      <=CS(18 downto 17);
+    outJM       <=CS(21 downto 19);
+    outWirteOut <=CS(22);
+    outBit1     <=CS(23);
+    outFreeze   <=CS(24);
+    outCond     <=CS(25);
+    outEXP1     <=CS(26);
+    outEXP2     <=CS(27);
    
 end ControlUnit ; -- ControlUnit
-
-
--- MOV 
--- INC 
--- ADD 
--- SUB 
--- AND 
--- SETC
--- ADDI
--- PUSH
--- POP 
--- LDM 
--- LDD 
--- STD 
