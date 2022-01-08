@@ -29,7 +29,8 @@ ARCHITECTURE cpu OF cpu IS
 	SIGNAL memo_data16 : STD_LOGIC_VECTOR(15 DOWNTO 0);	  --data 16 form data memory
 	SIGNAL memo_data32 : STD_LOGIC_VECTOR(31 DOWNTO 0);	  --data 32 form data memory
 	SIGNAL index : STD_LOGIC_VECTOR(1 DOWNTO 0);				  --index
-
+    SIGNAL exec_result:  std_logic_vector(15 DOWNTO 0); -- the output of the final mux in the execution stage
+	
 	-- flag register signals:
 	signal flag_in : std_logic_vector(3 downto 0);
 	signal flag_out : std_logic_vector(3 downto 0);	
@@ -109,6 +110,10 @@ BEGIN
 				CS <= "0000000000000100100000001101";
 			ELSIF stage1_reg(4 DOWNTO 0) = "00101" THEN 			-- STD
 				CS <= "0000000000000000000010001101";
+			ELSIF stage1_reg(4 DOWNTO 0) = "01101" THEN             -- OUT
+			    CS <= "0000010000000000000000000000";
+			ELSIF stage1_reg(4 DOWNTO 0) = "01110" THEN             -- IN
+			    CS <= "0000000000000100000000000010";	
 				--TODO:complete the CU logic
 			END IF;
 		END IF;
@@ -151,6 +156,22 @@ BEGIN
 	alu : ENTITY work.alu PORT MAP(not_clk, alu_operand1, alu_operand2, stage2_reg(4 DOWNTO 2), alu_result, flag_in);
 	flag: entity work.flag_reg port map (clk, rst, not CS(12), flag_in, flag_out);		--CS(12) is SaveRef (not enable)
 
+    --output 
+	process (clk)
+	begin
+		if rising_edge(clk) then
+			if stage2_reg(22) = '1' then 
+				out_port <=  alu_result;
+			end if;	 
+		end if;
+	end process;
+    
+    --input 
+	with stage2_reg(1) select
+	exec_result <=
+	    in_port when '1', 
+		alu_result when others;
+
 	--execute-memory-buffer
 	EX_MEM_buffer : ENTITY work.EX_MEM_buffer PORT MAP (
 		clk,
@@ -159,7 +180,7 @@ BEGIN
 		stage2_reg(39 DOWNTO 37), 	--inRdst_index
 		stage2_reg(55 DOWNTO 40), 	--inRsrc_data1
 		x"0000", 						--inG2
-		alu_result, 					--inResult
+		exec_result, 					--inResult
 		stage2_reg(89 DOWNTO 88), 	--inInt_index
 		stage2_reg(92 DOWNTO 90), 	--inRsrc1_index
 		stage2_reg(95 DOWNTO 93), 	--inRsrc2_index
