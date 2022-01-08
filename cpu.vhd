@@ -51,6 +51,10 @@ ARCHITECTURE cpu OF cpu IS
 	signal exp2: std_logic;
 	signal cs_3_4 : std_logic_vector(27 downto 0);
 	signal exp_fetch_bool: std_logic;
+
+	-- RET, RTI  Singnals:
+	signal is_RET_RTI_INT_CALL  : std_logic;
+	
 BEGIN
 	not_clk <= NOT clk;
 
@@ -107,7 +111,7 @@ BEGIN
 		stage1_reg(9 DOWNTO 7), 										--outRdst_index
 		stage1_reg(12 DOWNTO 10), 										--outRsrc1_index
 		stage1_reg(15 DOWNTO 13), 										--outRsrc2_index
-		index, 																--outInt_index
+		index, 															--outInt_index
 		stage1_reg(63 DOWNTO 32)										--outPC
 		);
 
@@ -189,24 +193,24 @@ BEGIN
 		'1',
 		CS,
 		"000000000", 					--inG
-		stage1_reg(9 DOWNTO 7), 	--inRdst_index
+		stage1_reg(9 DOWNTO 7), 		--inRdst_index
 		read_data1,						--inRsrc_data1
 		read_data2, 					--inRsrc_data2
-		stage1_reg(31 DOWNTO 16), 	--inImm
+		stage1_reg(31 DOWNTO 16), 		--inImm
 		index, 							--inInt_index
-		stage1_reg(12 DOWNTO 10), 	--inRsrc1_index
-		stage1_reg(15 DOWNTO 13), 	--inRsrc2_index
-		stage1_reg(63 DOWNTO 32), 	--inPC
-		stage2_reg(27 DOWNTO 0), 	--outCS
+		stage1_reg(12 DOWNTO 10), 		--inRsrc1_index
+		stage1_reg(15 DOWNTO 13), 		--inRsrc2_index
+		stage1_reg(63 DOWNTO 32), 		--inPC
+		stage2_reg(27 DOWNTO 0), 		--outCS
 		OPEN, 							--outG
-		stage2_reg(39 DOWNTO 37), 	--outRdst_index
-		stage2_reg(55 DOWNTO 40), 	--outRsrc_data1
-		stage2_reg(71 DOWNTO 56), 	--outRsrc_data2
-		stage2_reg(87 DOWNTO 72), 	--outImm
-		stage2_reg(89 DOWNTO 88), 	--outInt_index
-		stage2_reg(92 DOWNTO 90), 	--outRsrc1_index
-		stage2_reg(95 DOWNTO 93), 	--outRsrc2_index
-		stage2_reg(127 DOWNTO 96)	--outPC
+		stage2_reg(39 DOWNTO 37), 		--outRdst_index
+		stage2_reg(55 DOWNTO 40), 		--outRsrc_data1
+		stage2_reg(71 DOWNTO 56), 		--outRsrc_data2
+		stage2_reg(87 DOWNTO 72), 		--outImm
+		stage2_reg(89 DOWNTO 88), 		--outInt_index
+		stage2_reg(92 DOWNTO 90), 		--outRsrc1_index
+		stage2_reg(95 DOWNTO 93), 		--outRsrc2_index
+		stage2_reg(127 DOWNTO 96)		--outPC
 		);
 
 	--execute-logic
@@ -234,7 +238,9 @@ BEGIN
 	     stage2_reg(71 DOWNTO 56) WHEN OTHERS;--rsrc2(16)
 	--alu module
 	alu : ENTITY work.alu PORT MAP(not_clk, alu_operand1, alu_operand2, stage2_reg(4 DOWNTO 2), alu_result, flag_in_alu);
-	flag: entity work.flag_reg port map (clk, rst, not CS(12), flag_in, flag_out);		--CS(12) is SaveRef (not enable)
+	-- stage2_reg(15) is SaveF, stage2_reg(16) is ResF, this should solve the flag register saving/restoring problem 
+	-- depending only on the respective signals.
+	flag: entity work.flag_reg port map (clk, rst, stage2_reg(15),stage2_reg(16), flag_in, flag_out);
 	jlu: entity work.jlu port map (
 		not_clk,
 		stage2_reg(17),--pcc
@@ -244,9 +250,8 @@ BEGIN
 		flag_in_jlu--flag_in
 	);
 	with stage2_reg(17) select
-		flag_in<=
-		flag_in_jlu WHEN '1',
-		flag_in_alu WHEN OTHERS;
+		flag_in	<= 	flag_in_jlu WHEN '1',
+				  	flag_in_alu WHEN OTHERS;
 	cs_2_3 <= stage2_reg(27 DOWNTO 26) & cond & stage2_reg(24 DOWNTO 0);
 	flush_module: ENTITY work.flush PORT MAP(
 		not_clk,
@@ -277,40 +282,46 @@ BEGIN
 		clk,
 		rst or flush_jmp or exp1 or exp2,
 		'1',
-		cs_2_3, 	--inCS
-		stage2_reg(36 DOWNTO 28), 	--inG1
-		stage2_reg(39 DOWNTO 37), 	--inRdst_index
-		stage2_reg(55 DOWNTO 40), 	--inRsrc_data1
+		cs_2_3, 						--inCS
+		stage2_reg(36 DOWNTO 28), 		--inG1
+		stage2_reg(39 DOWNTO 37), 		--inRdst_index
+		stage2_reg(55 DOWNTO 40), 		--inRsrc_data1
 		x"0000", 						--inG2
 		exec_result, 					--inResult
-		stage2_reg(89 DOWNTO 88), 	--inInt_index
-		stage2_reg(92 DOWNTO 90), 	--inRsrc1_index
-		stage2_reg(95 DOWNTO 93), 	--inRsrc2_index
-		stage2_reg(127 DOWNTO 96),	--inPC
-		stage3_reg(27 DOWNTO 0), 	--outCS
-		stage3_reg(55 DOWNTO 40), 	--outRsrc_data1
-		stage3_reg(87 DOWNTO 72), 	--outResult
-		stage3_reg(39 DOWNTO 37), 	--outRdst_index
-		stage3_reg(89 DOWNTO 88), 	--outInt_index
-		stage3_reg(127 DOWNTO 96)	--outPC
+		stage2_reg(89 DOWNTO 88), 		--inInt_index
+		stage2_reg(92 DOWNTO 90), 		--inRsrc1_index
+		stage2_reg(95 DOWNTO 93), 		--inRsrc2_index
+		stage2_reg(127 DOWNTO 96),		--inPC
+		stage3_reg(27 DOWNTO 0), 		--outCS
+		stage3_reg(55 DOWNTO 40), 		--outRsrc_data1
+		stage3_reg(87 DOWNTO 72), 		--outResult
+		stage3_reg(39 DOWNTO 37), 		--outRdst_index
+		stage3_reg(89 DOWNTO 88), 		--outInt_index
+		stage3_reg(127 DOWNTO 96)		--outPC
 		);
 
 	--memory logic
 	--Stack pointer
-	stack_module : ENTITY work.stack_module PORT MAP(clk, rst, stage3_reg(10 DOWNTO 8), stack_addr);
+	stack_module : ENTITY work.stack_module PORT MAP(clk, rst, stage3_reg(10 DOWNTO 8), stack_addr);	-- stage3_reg(10 downto 8): SPA
 	--mux5(memo_addr)
-	WITH stage3_reg(6 DOWNTO 5) SELECT
+	WITH stage3_reg(6 DOWNTO 5) SELECT	-- stage3_reg(6 downto 5): AddSrc 
 	memo_addr <=
 		(x"0000") & stage3_reg(87 DOWNTO 72) WHEN "01", --result of alu
 		stack_addr WHEN "10", --stack_addr
 		(OTHERS => '0') WHEN OTHERS;--temp
-	--memory module
+	-- ____________________________________________________________________________________
+	-- RET, RTI, INT, CALL
+	 is_RET_RTI_INT_CALL <= '1' when (stage3_reg(6 downto 5) and stage3_reg(18 downto 17)) or () else '0';	-- AddSrc=10, PCC=01 ===> RET|RTI|INT|CALL
+	-- ____________________________________________________________________________________
+
+	 --memory module
 	data_memory : ENTITY work.data_memory PORT MAP(
 		not_clk, 
-		stage3_reg(7), 
-		memo_addr, '0', 
-		stage3_reg(55 DOWNTO 40), 
-		stage3_reg(127 DOWNTO 96), 
+		stage3_reg(7), -- MEMW
+		memo_addr,
+		is_RET_RTI_INT_CALL,	-- is_32_bit ? --
+		stage3_reg(55 DOWNTO 40),  --inRsrc_data1 
+		stage3_reg(127 DOWNTO 96), -- PC
 		memo_data16, 
 		memo_data32,
 		exp2,
@@ -328,16 +339,16 @@ BEGIN
 		stage3_reg(39 DOWNTO 37), 	--inRdst_index
 		stage3_reg(55 DOWNTO 40), 	--inRsrc_data1
 		memo_data16, 					--inData16
-		stage3_reg(87 DOWNTO 72), 	--inResult
+		stage3_reg(87 DOWNTO 72), 		--inResult
 		memo_data32, 					--inData32
 		"00", 							--inG2
 		"000", 							--inG3
 		"000", 							--inG4
-		stage4_reg(27 DOWNTO 0), 	--outCS
-		stage4_reg(39 DOWNTO 37), 	--outRdst_index
-		stage4_reg(87 DOWNTO 72), 	--outResult
-		stage4_reg(127 DOWNTO 96), --outData32
-		stage4_reg(71 DOWNTO 56)	--outData16
+		stage4_reg(27 DOWNTO 0), 		--outCS
+		stage4_reg(39 DOWNTO 37), 		--outRdst_index
+		stage4_reg(87 DOWNTO 72), 		--outResult
+		stage4_reg(127 DOWNTO 96), 		--outData32
+		stage4_reg(71 DOWNTO 56)		--outData16
 		);
 
 	--writeback logic
