@@ -24,16 +24,16 @@ begin
 			else
 				if operation = "001" then
 					address_reg_temp_pop <= address_reg;
-					address_reg <= std_logic_vector(unsigned(address_reg) + 1);
+					address_reg <= std_logic_vector(unsigned(address_reg) + 1);		-- pop 16-bit
 				elsif operation = "010" then
 					address_reg_temp_pop <= address_reg;
-					address_reg <= std_logic_vector(unsigned(address_reg) - 1);
+					address_reg <= std_logic_vector(unsigned(address_reg) - 1);		-- push 16-bit
 				elsif operation = "011" then
 					address_reg_temp_pop <= address_reg;
-					address_reg <= std_logic_vector(unsigned(address_reg) + 2);
+					address_reg <= std_logic_vector(unsigned(address_reg) + 2);		-- pop 32-bit
 				elsif operation = "100" then
 					address_reg_temp_pop <= address_reg;
-					address_reg <= std_logic_vector(unsigned(address_reg) - 2);
+					address_reg <= std_logic_vector(unsigned(address_reg) - 2);		-- push 32-bit
 				end if;
 			end if;
 		end if;

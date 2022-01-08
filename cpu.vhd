@@ -50,6 +50,10 @@ ARCHITECTURE cpu OF cpu IS
 	signal exp1: std_logic;
 	signal exp2: std_logic;
 	signal cs_3_4 : std_logic_vector(27 downto 0);
+
+	-- RET, RTI  Singnals:
+	signal is_RET_RTI_INT_CALL  : std_logic;
+	
 BEGIN
 	not_clk <= NOT clk;
 	--PC module
@@ -221,7 +225,9 @@ BEGIN
 	    stage2_reg(71 DOWNTO 56) WHEN OTHERS;--rsrc2(16)
 	--alu module
 	alu : ENTITY work.alu PORT MAP(not_clk, alu_operand1, alu_operand2, stage2_reg(4 DOWNTO 2), alu_result, flag_in_alu);
-	flag: entity work.flag_reg port map (clk, rst, not CS(12), flag_in, flag_out);		--CS(12) is SaveRef (not enable)
+	-- stage2_reg(15) is SaveF, stage2_reg(16) is ResF, this should solve the flag register saving/restoring problem 
+	-- depending only on the respective signals.
+	flag: entity work.flag_reg port map (clk, rst, stage2_reg(15),stage2_reg(16), flag_in, flag_out);
 	jlu: entity work.jlu port map (
 		not_clk,
 		stage2_reg(17),--pcc
@@ -231,9 +237,8 @@ BEGIN
 		flag_in_jlu--flag_in
 	);
 	with stage2_reg(17) select
-		flag_in<=
-		flag_in_jlu WHEN '1',
-		flag_in_alu WHEN OTHERS;
+		flag_in	<= 	flag_in_jlu WHEN '1',
+				  	flag_in_alu WHEN OTHERS;
 	cs_2_3 <= stage2_reg(27 DOWNTO 26) & cond & stage2_reg(24 DOWNTO 0);
 	flush_module: ENTITY work.flush PORT MAP(
 		not_clk,
@@ -284,20 +289,26 @@ BEGIN
 
 	--memory logic
 	--Stack pointer
-	stack_module : ENTITY work.stack_module PORT MAP(clk, rst, stage3_reg(10 DOWNTO 8), stack_addr);
+	stack_module : ENTITY work.stack_module PORT MAP(clk, rst, stage3_reg(10 DOWNTO 8), stack_addr);	-- stage3_reg(10 downto 8): SPA
 	--mux5(memo_addr)
-	WITH stage3_reg(6 DOWNTO 5) SELECT
+	WITH stage3_reg(6 DOWNTO 5) SELECT	-- stage3_reg(6 downto 5): AddSrc 
 	memo_addr <=
 		(x"0000") & stage3_reg(87 DOWNTO 72) WHEN "01", --result of alu
 		stack_addr WHEN "10", --stack_addr
 		(OTHERS => '0') WHEN OTHERS;--temp
-	--memory module
+	-- ____________________________________________________________________________________
+	-- RET, RTI, INT, CALL
+	 is_RET_RTI_INT_CALL <= '1' when (stage3_reg(6 downto 5) and stage3_reg(18 downto 17)) or () else '0';	-- AddSrc=10, PCC=01 ===> RET|RTI|INT|CALL
+	-- ____________________________________________________________________________________
+
+	 --memory module
 	data_memory : ENTITY work.data_memory PORT MAP(
 		not_clk, 
-		stage3_reg(7), 
-		memo_addr, '0', 
-		stage3_reg(55 DOWNTO 40), 
-		stage3_reg(127 DOWNTO 96), 
+		stage3_reg(7), -- MEMW
+		memo_addr,
+		is_RET_RTI_INT_CALL,	-- is_32_bit ? --
+		stage3_reg(55 DOWNTO 40),  --inRsrc_data1 
+		stage3_reg(127 DOWNTO 96), -- PC
 		memo_data16, 
 		memo_data32,
 		exp2,
