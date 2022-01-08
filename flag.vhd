@@ -15,7 +15,7 @@ architecture a_flag_reg of flag_reg is
    
 begin
    
-   process (clk,rst,en)
+   process (clk,rst)
    begin
       if rst = '1' then
          flag_out <= (others=>'0');
@@ -23,11 +23,11 @@ begin
          elsif rising_edge(clk) and save='1' then
             tempFlag<=flag_in;
             flag_out <= flag_in;
-         elsif elsif rising_edge(clk) and restore='1' then
+         elsif  rising_edge(clk) and restore='1' then
             flag_out<=tempFlag;
             tempFlag<=(others=>'0');
          elsif rising_edge(clk) then
-            flag_out=flag_in;
+            flag_out<=flag_in;
          end if;
    end process; 
 end a_flag_reg;
