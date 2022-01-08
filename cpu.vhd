@@ -46,6 +46,7 @@ ARCHITECTURE cpu OF cpu IS
 	signal flush_call: std_logic;
 	signal exp1: std_logic;
 	signal exp2: std_logic;
+	signal cs_3_4 : std_logic_vector(27 downto 0);
 BEGIN
 	not_clk <= NOT clk;
 	--PC module
@@ -75,7 +76,7 @@ BEGIN
 	--fetch-decode-buffer
 	IF_ID_buffer : ENTITY work.IF_ID_buffer PORT MAP (
 		clk,
-		rst or flush_jmp,
+		rst or flush_jmp or exp1 or exp2,
 		'1',
 		inst_memo(15 DOWNTO 0), 										--inInstruction
 		inst_memo(31 DOWNTO 16), 										--inImm
@@ -112,15 +113,15 @@ BEGIN
 			ELSIF stage1_reg(4 DOWNTO 0) = "10100" THEN 			-- iadd
 				CS <= "0000000000000100000000001101";
 			ELSIF stage1_reg(4 DOWNTO 0) = "00001" THEN 			-- PUSH
-				CS <= "0000000000000000001010100000";
+				CS <= "0000000000000000001011000000";
 			ELSIF stage1_reg(4 DOWNTO 0) = "00010" THEN 			-- POP
-				CS <= "0000000000000100100100100000";
+				CS <= "0000000000000100100101000000";
 			ELSIF stage1_reg(4 DOWNTO 0) = "00011" THEN 			-- LDM
 				CS <= "0000000000000100000000000001";
 			ELSIF stage1_reg(4 DOWNTO 0) = "00100" THEN 			-- LDD
-				CS <= "0000000000000100100000001101";
+				CS <= "0000000000000100100000101101";
 			ELSIF stage1_reg(4 DOWNTO 0) = "00101" THEN 			-- STD
-				CS <= "0000000000000000000010001101";
+				CS <= "0000000000000000000010101101";
 			ELSIF stage1_reg(4 DOWNTO 0) = "01101" THEN             -- OUT
 				CS <= "0000010000000000000000000000";
 			ELSIF stage1_reg(4 DOWNTO 0) = "01110" THEN             -- IN
@@ -134,17 +135,17 @@ BEGIN
 			ELSIF stage1_reg(4 DOWNTO 0) = "11011" THEN 			-- JLT
 				CS <= "0010000110100010000000000000";
 			ELSIF stage1_reg(4 DOWNTO 0) = "11110" THEN				-- INT
-				CS <= "0000001100101000000000000000";
+				CS <= "0000001100101000000001000000";
 			ELSIF stage1_reg(4 DOWNTO 0) = "11100" THEN				-- CALL
-				CS <= "0000001000100010000000000000";
+				CS <= "0000001000100010000001000000";
 			ELSIF stage1_reg(4 DOWNTO 0) = "01000" THEN				-- NOP
 				CS <= "0000000000000000000000000000";
 			ELSIF stage1_reg(4 DOWNTO 0) = "01001" THEN				-- HLT
 				CS <= "0001000000000000000000000000";
 			ELSIF stage1_reg(4 DOWNTO 0) = "11101" THEN				-- RET
-				CS <= "0000001010100001000000000000";
+				CS <= "0000001010100001000001000000";
 			ELSIF stage1_reg(4 DOWNTO 0) = "11111" THEN				-- RTI
-				CS <= "0000001110110001000000000000";
+				CS <= "0000001110110001000001000000";
 			ELSIF stage1_reg(4 DOWNTO 0) = "01011" THEN				-- NOT
 				CS <= "0000000000000000000000011100";
 
@@ -164,7 +165,7 @@ BEGIN
 	--decode-execute-buffer
 	ID_EX_buffer : ENTITY work.ID_EX_buffer PORT MAP (
 		clk,
-		rst or flush_jmp,
+		rst or flush_jmp or exp1 or exp2,
 		'1',
 		CS,
 		"000000000", 					--inG
@@ -239,7 +240,7 @@ BEGIN
 	--execute-memory-buffer
 	EX_MEM_buffer : ENTITY work.EX_MEM_buffer PORT MAP (
 		clk,
-		rst or flush_jmp,
+		rst or flush_jmp or exp1 or exp2,
 		'1',
 		cs_2_3, 	--inCS
 		stage2_reg(36 DOWNTO 28), 	--inG1
@@ -265,8 +266,8 @@ BEGIN
 	--mux5(memo_addr)
 	WITH stage3_reg(6 DOWNTO 5) SELECT
 	memo_addr <=
-		(x"0000") & stage3_reg(87 DOWNTO 72) WHEN "00", --result of alu
-		stack_addr WHEN "01", --stack_addr
+		(x"0000") & stage3_reg(87 DOWNTO 72) WHEN "01", --result of alu
+		stack_addr WHEN "10", --stack_addr
 		(OTHERS => '0') WHEN OTHERS;--temp
 	--memory module
 	data_memory : ENTITY work.data_memory PORT MAP(
@@ -281,13 +282,13 @@ BEGIN
 		exp1,
 		stage3_reg(6 DOWNTO 5)
 		);
-
+	cs_3_4 <= stage3_reg(27 DOWNTO 15)&(stage3_reg(14) and (not exp1) and (not exp2))&stage3_reg(13 downto 0);
 	--memory-writeback-buffer
 	MEM_WB_buffer : ENTITY work.MEM_WB_buffer PORT MAP (
 		clk,
 		rst,
 		'1',
-		stage3_reg(27 DOWNTO 0), 	--inCS
+		cs_3_4, 	--inCS
 		stage3_reg(36 DOWNTO 28), 	--inG
 		stage3_reg(39 DOWNTO 37), 	--inRdst_index
 		stage3_reg(55 DOWNTO 40), 	--inRsrc_data1

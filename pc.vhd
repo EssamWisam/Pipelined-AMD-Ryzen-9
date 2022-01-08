@@ -21,7 +21,7 @@ begin
      begin
       if rising_edge(clk) then
             if rst = '1' then                    
-               current_pc <= X"00000005";
+               current_pc <= X"00000006";
             elsif ex1 = '1' then
                current_pc <= ex1_addr; 
             elsif ex2 = '1' then

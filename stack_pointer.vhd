@@ -19,6 +19,7 @@ begin
 	begin
 		if rising_edge(clk) then
 			if rst = '1' then
+				address_reg_temp_pop <= x"00100000";
 				address_reg <= x"000fffff";
 			else
 				if operation = "001" then
