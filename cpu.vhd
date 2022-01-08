@@ -38,7 +38,7 @@ ARCHITECTURE cpu OF cpu IS
 	signal flag_in : std_logic_vector(3 downto 0);
 	signal flag_in_alu : std_logic_vector(3 downto 0);
 	signal flag_in_jlu : std_logic_vector(3 downto 0);
-	signal flag_out : std_logic_vector(3 downto 0);	
+	signal flag_out : std_logic_vector(3 downto 0);
 	signal flag_en: std_logic;	
 	signal pc_addr : std_logic_vector(31 downto 0);
 	signal extended_Rsrc : std_logic_vector(31 downto 0);
@@ -50,8 +50,23 @@ ARCHITECTURE cpu OF cpu IS
 	signal exp1: std_logic;
 	signal exp2: std_logic;
 	signal cs_3_4 : std_logic_vector(27 downto 0);
+	signal exp_fetch_bool: std_logic;
 BEGIN
 	not_clk <= NOT clk;
+
+	process(not_clk)
+	begin
+		if rising_edge(not_clk) then
+			if rst = '1' then
+				exp_fetch_bool <='0';
+			elsif exp_fetch_bool ='1' then
+				exp_fetch_bool <='0';
+			elsif exp1 = '1' or exp2 = '1' then
+				exp_fetch_bool <='1';
+			end if;
+		end if;
+	end process;
+
 	--PC module
 	extended_Rsrc<= x"0000" & stage3_reg(55 downto 40);
 	pc_reg:ENTITY work.pc port map (
@@ -81,7 +96,7 @@ BEGIN
 	--fetch-decode-buffer
 	IF_ID_buffer : ENTITY work.IF_ID_buffer PORT MAP (
 		clk,
-		rst or flush_jmp or exp1 or exp2,
+		rst or flush_jmp or exp1 or exp2 or exp_fetch_bool,
 		'1',
 		inst_memo(15 DOWNTO 0), 										--inInstruction
 		inst_memo(31 DOWNTO 16), 										--inImm
@@ -193,10 +208,6 @@ BEGIN
 		stage2_reg(95 DOWNTO 93), 	--outRsrc2_index
 		stage2_reg(127 DOWNTO 96)	--outPC
 		);
-   
-    
-
-
 
 	--execute-logic
 	--mux1
@@ -218,9 +229,9 @@ BEGIN
 	--mux2(operand2)
 	WITH MUX2_SEL SELECT
 	alu_operand2 <= 
-	    stage3_reg(87 DOWNTO 72) WHEN "10",
-	    wb_data WHEN "01",
-	    stage2_reg(71 DOWNTO 56) WHEN OTHERS;--rsrc2(16)
+	     stage3_reg(87 DOWNTO 72) WHEN "10",
+	     wb_data WHEN "01",
+	     stage2_reg(71 DOWNTO 56) WHEN OTHERS;--rsrc2(16)
 	--alu module
 	alu : ENTITY work.alu PORT MAP(not_clk, alu_operand1, alu_operand2, stage2_reg(4 DOWNTO 2), alu_result, flag_in_alu);
 	flag: entity work.flag_reg port map (clk, rst, not CS(12), flag_in, flag_out);		--CS(12) is SaveRef (not enable)
