@@ -15,18 +15,14 @@ entity pc is
 end pc;
 
 architecture a_pc of pc is
-   signal current_pc: std_logic_vector( 31 downto 0) := X"00000000";
-   -- the two following signals and the portmap were used to test the pc/inst. memory integration.
-   signal inst : std_logic_vector(15 downto 0);
-   signal imm : std_logic_vector(15 downto 0);
+   signal current_pc: std_logic_vector( 31 downto 0);
 begin
-   inst_mem: ENTITY work.inst_memory PORT MAP (clk, current_pc, inst, imm );
-  process (clk,rst)
+  process (clk)
      begin
-         if rst = '1' then                    
-           current_pc <= X"00000000";         -- may need to be changed to X"00000006" (exceptions)
-         elsif rising_edge(clk) then
-            if ex1 = '1' then
+      if rising_edge(clk) then
+            if rst = '1' then                    
+            current_pc <= X"00000000";         -- may need to be changed to X"00000006" (exceptions)
+            elsif ex1 = '1' then
                current_pc <= ex1_addr; 
             elsif ex2 = '1' then
                current_pc <= ex2_addr;

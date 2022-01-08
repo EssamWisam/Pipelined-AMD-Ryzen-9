@@ -23,17 +23,19 @@ force -freeze sim:/cpu/flag_en 1 0
 
 force -freeze sim:/cpu/reg_file/reg1 X\"FFFF\" 0
 force -freeze sim:/cpu/reg_file/reg2 X\"FFFF\" 0
-force -freeze sim:/cpu/inst_memo 00000000000000000000010110010000 0
+force -freeze sim:/cpu/inst_memo X\"00000590\" 0
 run
-force -freeze sim:/cpu/inst_memo 00000000000000000100011000010001 0
+force -freeze sim:/cpu/inst_memo X\"00004611\" 0
 run
-force -freeze sim:/cpu/inst_memo 00000000000000000100011010010011 0
+force -freeze sim:/cpu/inst_memo X\"00004693\" 0
 run
-force -freeze sim:/cpu/inst_memo 00000000000011110010001101010100 0
+force -freeze sim:/cpu/inst_memo X\"000f2354\" 0
 run
-force -freeze sim:/cpu/inst_memo 00000000000000000010101110010010 0
+force -freeze sim:/cpu/inst_memo X\"00002b92\" 0
 run
-force -freeze sim:/cpu/inst_memo 00000000000000000000010110001100 0
+force -freeze sim:/cpu/inst_memo X\"00000d8c\" 0
+run
+force -freeze sim:/cpu/inst_memo X\"0000000a\" 0
 run
 run
 run
@@ -48,4 +50,4 @@ run
 #AND R5, R1, R2
 #ADDI R6, R1, 15
 #SUB R7, R2, R1
-#INC R1
+#INC R3

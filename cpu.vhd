@@ -34,17 +34,40 @@ ARCHITECTURE cpu OF cpu IS
 	signal flag_in : std_logic_vector(3 downto 0);
 	signal flag_out : std_logic_vector(3 downto 0);	
 	signal flag_en: std_logic;	
-
+	signal pc_addr : std_logic_vector(31 downto 0);
+	signal extended_Rsrc : std_logic_vector(31 downto 0);
 BEGIN
 	not_clk <= NOT clk;
-	--TODO:add fetch logic
-
+	--PC module
+	extended_Rsrc<= x"0000" & stage3_reg(55 downto 40);
+	pc_reg:ENTITY work.pc port map (
+		clk,
+		rst,
+		stage4_reg(26),--ex1
+		stage4_reg(27),--ex2
+		inst_memo(5),--freeze Note:Check with Ahmed
+		stage3_reg(25),--Cond
+		inst_memo(6),--isLongInst
+		stage3_reg(13 downto 12),--pc_src
+		X"00000002",--ex1_addr
+		X"00000004",--ex2_addr
+		stage4_reg(127 downto 96),--data_32
+		extended_Rsrc,--extended_Rsrc
+		pc_addr--next_addr
+	);
+	--instruction memory module
+	instruction_memory: ENTITY work.inst_memory port map (
+		not_clk,
+		pc_addr, --pc
+		inst_memo(15 DOWNTO 0), --instruction
+		inst_memo(31 DOWNTO 16) --immediate
+		);
 	--fetch-decode-buffer
 	IF_ID_buffer : ENTITY work.IF_ID_buffer PORT MAP (
 		clk,
 		inst_memo(15 DOWNTO 0), 										--inInstruction
 		inst_memo(31 DOWNTO 16), 										--inImm
-		x"00000000", 														--TODO:to be changed to pc
+		pc_addr, 														--pc
 		x"0000000000000000", 											--inG
 		stage1_reg(6 DOWNTO 0), 										--outOpCode
 		stage1_reg(31 DOWNTO 16), 										--outImm
