@@ -23,15 +23,16 @@ begin
 			if pcc='1' then
 				if jm = "000" and flag_out(3)='1' then			      	-- Check if zero
 					Cond_reg <= '1';
-				flag_in(3) <= '0';
+					flag_in(3) <= '0';
 				elsif jm = "001" and flag_out(2)='1' then					-- Check if negative
 					Cond_reg <= '1';
-				flag_in(2) <= '0';
-				elsif jm = "010" and flag_out(1 downto 0)="01" then	-- Check if carry
+					flag_in(2) <= '0';
+				elsif jm = "010" and (flag_out(1 downto 0)="11" or flag_out(1 downto 0)="01") then	-- Check if carry
 					Cond_reg <= '1';
-				flag_in(1 downto 0) <= "00";
+					flag_in(1 downto 0) <= "00";
 				elsif jm = "011" then
 					Cond_reg <= '1';
+					flag_in <= flag_out;
 				else
 					Cond_reg <= '0';										 		-- Still haven't considered other PC changers
 				end if;

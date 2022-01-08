@@ -42,6 +42,8 @@ ARCHITECTURE cpu OF cpu IS
 	signal cs_2_3 : std_logic_vector(27 downto 0);
 	signal cond: std_logic;
 	signal freeze: std_logic;
+	signal flush_jmp: std_logic;
+	signal flush_call: std_logic;
 BEGIN
 	not_clk <= NOT clk;
 	--PC module
@@ -51,7 +53,7 @@ BEGIN
 		rst,
 		stage4_reg(26),--ex1
 		stage4_reg(27),--ex2
-		freeze,--freeze Note:Check with Ahmed
+		freeze,--freeze
 		stage3_reg(25),--Cond
 		inst_memo(6),--isLongInst
 		stage3_reg(13 downto 12),--pc_src
@@ -71,7 +73,7 @@ BEGIN
 	--fetch-decode-buffer
 	IF_ID_buffer : ENTITY work.IF_ID_buffer PORT MAP (
 		clk,
-		rst,
+		rst or flush_jmp,
 		'1',
 		inst_memo(15 DOWNTO 0), 										--inInstruction
 		inst_memo(31 DOWNTO 16), 										--inImm
@@ -150,17 +152,17 @@ BEGIN
 		END IF;
 	END PROCESS;
 	--frz module
-		frz_module: ENTITY work.frz port map (
-			not_clk,
-			rst,
-			stage1_reg(4 DOWNTO 0), --opcode
-			freeze --freeze
-			);
+	frz_module: ENTITY work.frz port map (
+		not_clk,
+		rst,
+		stage1_reg(4 DOWNTO 0), --opcode
+		freeze --freeze
+		);
 
 	--decode-execute-buffer
 	ID_EX_buffer : ENTITY work.ID_EX_buffer PORT MAP (
 		clk,
-		rst,
+		rst or flush_jmp,
 		'1',
 		CS,
 		"000000000", 					--inG
@@ -197,18 +199,25 @@ BEGIN
 	flag: entity work.flag_reg port map (clk, rst, not CS(12), flag_in, flag_out);		--CS(12) is SaveRef (not enable)
 	jlu: entity work.jlu port map (
 		not_clk,
-		stage2_reg(17),
-		flag_out,
-		stage2_reg(21 DOWNTO 19),
-		cond,
-		flag_in_jlu
+		stage2_reg(17),--pcc
+		flag_out,--flag_out
+		stage2_reg(21 DOWNTO 19),--jm
+		cond,--Cond
+		flag_in_jlu--flag_in
 	);
 	with stage2_reg(17) select
 		flag_in<=
 		flag_in_jlu WHEN '1',
 		flag_in_alu WHEN OTHERS;
 	cs_2_3 <= stage2_reg(27 DOWNTO 26) & cond & stage2_reg(24 DOWNTO 0);
-
+	flush_module: ENTITY work.flush PORT MAP(
+		not_clk,
+		stage2_reg(17),
+		stage2_reg(21 DOWNTO 19),
+		cond,
+		flush_jmp,
+		flush_call
+		);
     --output 
 	process (clk)
 	begin
@@ -228,7 +237,7 @@ BEGIN
 	--execute-memory-buffer
 	EX_MEM_buffer : ENTITY work.EX_MEM_buffer PORT MAP (
 		clk,
-		rst,
+		rst or flush_jmp,
 		'1',
 		cs_2_3, 	--inCS
 		stage2_reg(36 DOWNTO 28), 	--inG1
