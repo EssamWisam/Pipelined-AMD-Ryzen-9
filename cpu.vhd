@@ -32,10 +32,14 @@ ARCHITECTURE cpu OF cpu IS
 
 	-- flag register signals:
 	signal flag_in : std_logic_vector(3 downto 0);
+	signal flag_in_alu : std_logic_vector(3 downto 0);
+	signal flag_in_jlu : std_logic_vector(3 downto 0);
 	signal flag_out : std_logic_vector(3 downto 0);	
 	signal flag_en: std_logic;	
 	signal pc_addr : std_logic_vector(31 downto 0);
 	signal extended_Rsrc : std_logic_vector(31 downto 0);
+	signal cs_2_3 : std_logic_vector(27 downto 0);
+	signal cond: std_logic;
 BEGIN
 	not_clk <= NOT clk;
 	--PC module
@@ -110,6 +114,8 @@ BEGIN
 			ELSIF stage1_reg(4 DOWNTO 0) = "00101" THEN 			-- STD
 				CS <= "0000000000000000000010001101";
 				--TODO:complete the CU logic
+			ELSE
+				CS <= "0000000000000000000000000000";
 			END IF;
 		END IF;
 	END PROCESS;
@@ -148,13 +154,25 @@ BEGIN
 	--mux2(operand1)
 	alu_operand2 <= stage2_reg(71 DOWNTO 56);--rsrc2(16)
 	--alu module
-	alu : ENTITY work.alu PORT MAP(not_clk, alu_operand1, alu_operand2, stage2_reg(4 DOWNTO 2), alu_result, flag_in);
+	alu : ENTITY work.alu PORT MAP(not_clk, alu_operand1, alu_operand2, stage2_reg(4 DOWNTO 2), alu_result, flag_in_alu);
 	flag: entity work.flag_reg port map (clk, rst, not CS(12), flag_in, flag_out);		--CS(12) is SaveRef (not enable)
-
+	jlu: entity work.jlu port map (
+		not_clk,
+		stage2_reg(17),
+		flag_out,
+		stage2_reg(21 DOWNTO 19),
+		cond,
+		flag_in_jlu
+	);
+	with stage2_reg(17) select
+		flag_in<=
+		flag_in_jlu WHEN '1',
+		flag_in_alu WHEN OTHERS;
+	cs_2_3 <= stage2_reg(27 DOWNTO 26) & cond & stage2_reg(24 DOWNTO 0);
 	--execute-memory-buffer
 	EX_MEM_buffer : ENTITY work.EX_MEM_buffer PORT MAP (
 		clk,
-		stage2_reg(27 DOWNTO 0), 	--inCS
+		cs_2_3, 	--inCS
 		stage2_reg(36 DOWNTO 28), 	--inG1
 		stage2_reg(39 DOWNTO 37), 	--inRdst_index
 		stage2_reg(55 DOWNTO 40), 	--inRsrc_data1

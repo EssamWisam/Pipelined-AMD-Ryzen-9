@@ -2,7 +2,7 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
-entity alu is
+entity jlu is
 	port (
 		clk : in std_logic;
 		pcc : in std_logic;
@@ -11,9 +11,9 @@ entity alu is
 		Cond : out std_logic;
       flag_in : out std_logic_vector(3 downto 0)
 	);
-end alu;
+end jlu;
 
-architecture alu of alu is
+architecture jlu of jlu is
 	signal Cond_reg : std_logic;
 begin
 	--logic
@@ -40,4 +40,4 @@ begin
 	end process;
 	--out
 	Cond <= Cond_reg;
-end alu;
+end jlu;
