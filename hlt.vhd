@@ -21,8 +21,6 @@ begin
 			if opcode="01001" then		--HLT               
 				freeze_reg <= '1';
 				is_hlt <= '1';
-			elsif opcode="01000" then	--NOP
-				freeze_reg <='1';
 			elsif is_hlt = '0' or rst = '1' then
 				freeze_reg <= '0';
 			end if;
