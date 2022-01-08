@@ -311,7 +311,7 @@ BEGIN
 		(OTHERS => '0') WHEN OTHERS;--temp
 	-- ____________________________________________________________________________________
 	-- RET, RTI, INT, CALL
-	 is_RET_RTI_INT_CALL <= '1' when (stage3_reg(6 downto 5) and stage3_reg(18 downto 17)) or () else '0';	-- AddSrc=10, PCC=01 ===> RET|RTI|INT|CALL
+	 is_RET_RTI_INT_CALL <= '1' when (stage3_reg(6 downto 5)&stage3_reg(18 downto 17)="0110") else '0';	-- AddSrc=10, PCC=01 ===> RET|RTI|INT|CALL
 	-- ____________________________________________________________________________________
 
 	 --memory module

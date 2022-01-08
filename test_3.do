@@ -2,7 +2,8 @@ vsim work.cpu
 add wave -position end  sim:/cpu/clk
 add wave -position end  sim:/cpu/reg_file/rst
 add wave -position end  sim:/cpu/inst_memo
-
+add wave -position end  sim:/cpu/memo_addr
+add wave -position end  sim:/cpu/memo_data16
 add wave -position end  sim:/cpu/reg_file/reg0
 add wave -position end  sim:/cpu/reg_file/reg1
 add wave -position end  sim:/cpu/reg_file/reg2
