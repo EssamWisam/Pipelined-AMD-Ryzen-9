@@ -17,12 +17,12 @@ architecture a_inst_memory of inst_memory is
    signal ram_data: ram_type:=(
       x"0000",
       x"0000",
-      x"0000",--exception 1
+      x"FECB",--exception 1
       x"0000",
-      x"0000",--exception 2
-      x"0000",
-      x"041b",
-      x"2b92",
+      x"BCEF",--exception 2
+      x"0590",
+      x"0610",
+      x"0482",
       others => (others=>'0')
   );
 begin

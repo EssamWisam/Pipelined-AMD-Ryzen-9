@@ -12,25 +12,28 @@ END cpu;
 ARCHITECTURE cpu OF cpu IS
 	--pretty much all the signals we'll need in the processor
 	SIGNAL not_clk : STD_LOGIC;
-	SIGNAL inst_memo : STD_LOGIC_VECTOR(31 DOWNTO 0);       	--input from instruction memory (temporary)
-	SIGNAL stage1_reg : STD_LOGIC_VECTOR(127 DOWNTO 0);	  		--f/d
-	SIGNAL stage2_reg : STD_LOGIC_VECTOR(127 DOWNTO 0);	  		--d/e
-	SIGNAL stage3_reg : STD_LOGIC_VECTOR(127 DOWNTO 0);	  		--e/m
-	SIGNAL stage4_reg : STD_LOGIC_VECTOR(127 DOWNTO 0);	  		--m/wb
-	SIGNAL alu_operand1 : STD_LOGIC_VECTOR(15 DOWNTO 0);	  	--operand for alu
-	SIGNAL alu_operand2 : STD_LOGIC_VECTOR(15 DOWNTO 0);	  	--operand for alu
-	SIGNAL wb_data : STD_LOGIC_VECTOR(15 DOWNTO 0);			  	--data for write back
-	SIGNAL memo_addr : STD_LOGIC_VECTOR(31 DOWNTO 0);		  	--address for data memory
-	SIGNAL stack_addr : STD_LOGIC_VECTOR(31 DOWNTO 0);		  	--address for stack
-	SIGNAL CS : STD_LOGIC_VECTOR(27 DOWNTO 0);				  	--control signals
-	SIGNAL read_data1 : STD_LOGIC_VECTOR(15 DOWNTO 0);		  	--data for rsrc1
-	SIGNAL read_data2 : STD_LOGIC_VECTOR(15 DOWNTO 0);		  	--data for rsrc2
-	SIGNAL alu_result : STD_LOGIC_VECTOR(15 DOWNTO 0);		  	--result of alu
-	SIGNAL memo_data16 : STD_LOGIC_VECTOR(15 DOWNTO 0);	  		--data 16 form data memory
-	SIGNAL memo_data32 : STD_LOGIC_VECTOR(31 DOWNTO 0);	  		--data 32 form data memory
-	SIGNAL index : STD_LOGIC_VECTOR(1 DOWNTO 0);				--index
-    SIGNAL exec_result:  std_logic_vector(15 DOWNTO 0); 		-- the output of the final mux in the execution stage
-	
+	SIGNAL inst_memo : STD_LOGIC_VECTOR(31 DOWNTO 0);       --input from instruction memory (temporary)
+	SIGNAL stage1_reg : STD_LOGIC_VECTOR(127 DOWNTO 0);	  --f/d
+	SIGNAL stage2_reg : STD_LOGIC_VECTOR(127 DOWNTO 0);	  --d/e
+	SIGNAL stage3_reg : STD_LOGIC_VECTOR(127 DOWNTO 0);	  --e/m
+	SIGNAL stage4_reg : STD_LOGIC_VECTOR(127 DOWNTO 0);	  --m/wb
+	SIGNAL alu_operand1 : STD_LOGIC_VECTOR(15 DOWNTO 0);	  --operand for alu
+	SIGNAL alu_operand2 : STD_LOGIC_VECTOR(15 DOWNTO 0);	  --operand for alu
+	SIGNAL wb_data : STD_LOGIC_VECTOR(15 DOWNTO 0);			  --data for write back
+	SIGNAL memo_addr : STD_LOGIC_VECTOR(31 DOWNTO 0);		  --address for data memory
+	SIGNAL stack_addr : STD_LOGIC_VECTOR(31 DOWNTO 0);		  --address for stack
+	SIGNAL CS : STD_LOGIC_VECTOR(27 DOWNTO 0);				  --control signals
+	SIGNAL read_data1 : STD_LOGIC_VECTOR(15 DOWNTO 0);		  --data for rsrc1
+	SIGNAL read_data2 : STD_LOGIC_VECTOR(15 DOWNTO 0);		  --data for rsrc2
+	SIGNAL alu_result : STD_LOGIC_VECTOR(15 DOWNTO 0);		  --result of alu
+	SIGNAL memo_data16 : STD_LOGIC_VECTOR(15 DOWNTO 0);	  --data 16 form data memory
+	SIGNAL memo_data32 : STD_LOGIC_VECTOR(31 DOWNTO 0);	  --data 32 form data memory
+	SIGNAL index : STD_LOGIC_VECTOR(1 DOWNTO 0);				  --index
+    SIGNAL exec_result:  std_logic_vector(15 DOWNTO 0); -- the output of the final mux in the execution stage
+	SIGNAL MUX2_SEL      :   std_logic_vector(1 downto 0);
+	SIGNAL MUX3_SEL      :   std_logic_vector(1 downto 0);
+	SIGNAL MUX1_RESULT   :    std_logic_vector(15 DOWNTO 0);
+
 	-- flag register signals:
 	signal flag_in : std_logic_vector(3 downto 0);
 	signal flag_in_alu : std_logic_vector(3 downto 0);
@@ -44,6 +47,8 @@ ARCHITECTURE cpu OF cpu IS
 	signal freeze: std_logic;
 	signal flush_jmp: std_logic;
 	signal flush_call: std_logic;
+	signal exp1: std_logic;
+	signal exp2: std_logic;
 BEGIN
 	not_clk <= NOT clk;
 	--PC module
@@ -51,8 +56,8 @@ BEGIN
 	pc_reg:ENTITY work.pc port map (
 		clk,
 		rst,
-		stage4_reg(26),--ex1
-		stage4_reg(27),--ex2
+		exp1,--ex1
+		exp2,--ex2
 		freeze,--freeze
 		stage3_reg(25),--Cond
 		inst_memo(6),--isLongInst
@@ -185,15 +190,34 @@ BEGIN
 		stage2_reg(95 DOWNTO 93), 		--outRsrc2_index
 		stage2_reg(127 DOWNTO 96)		--outPC
 		);
+   
+    
+
+
 
 	--execute-logic
-	--mux1(operand1)
+	--mux1
 	WITH stage2_reg(0) SELECT
-	alu_operand1 <=
-		stage2_reg(55 DOWNTO 40) WHEN '0', 		--rsrc1(16)
-		stage2_reg(87 DOWNTO 72) WHEN OTHERS;	--imm(16)
-	--mux2(operand1)
-	alu_operand2 <= stage2_reg(71 DOWNTO 56);	--rsrc2(16)
+	MUX1_RESULT <=
+		stage2_reg(55 DOWNTO 40) WHEN '0', --rsrc1(16)
+		stage2_reg(87 DOWNTO 72) WHEN OTHERS;--imm(16)
+    
+	--Forwarding Unit              ----Rsrc1_index           ----Rsrc2_index           ---Rdst_index
+	FU : entity work.FU PORT MAP (stage2_reg(92 DOWNTO 90), stage2_reg(95 DOWNTO 93),stage3_reg(39 DOWNTO 37), stage4_reg(39 DOWNTO 37),MUX3_SEL,MUX2_SEL);	
+
+	--MUX3(OPERAND 1)
+	WITH MUX3_SEL SELECT
+	alu_operand1 <= 
+		stage3_reg(87 DOWNTO 72) WHEN "10",
+		wb_data WHEN "01",
+		MUX1_RESULT WHEN OTHERS;
+
+	--mux2(operand2)
+	WITH MUX2_SEL SELECT
+	alu_operand2 <= 
+	    stage3_reg(87 DOWNTO 72) WHEN "10",
+	    wb_data WHEN "01",
+	    stage2_reg(71 DOWNTO 56) WHEN OTHERS;--rsrc2(16)
 	--alu module
 	alu : ENTITY work.alu PORT MAP(not_clk, alu_operand1, alu_operand2, stage2_reg(4 DOWNTO 2), alu_result, flag_in_alu);
 	flag: entity work.flag_reg port map (clk, rst, not CS(12), flag_in, flag_out);		--CS(12) is SaveRef (not enable)
@@ -267,7 +291,18 @@ BEGIN
 		stack_addr WHEN "01", 							--stack_addr
 		(OTHERS => '0') WHEN OTHERS;					--temp
 	--memory module
-	data_memory : ENTITY work.data_memory PORT MAP(not_clk, stage3_reg(7), memo_addr, '0', stage3_reg(55 DOWNTO 40), stage3_reg(127 DOWNTO 96), memo_data16, memo_data32);
+	data_memory : ENTITY work.data_memory PORT MAP(
+		not_clk, 
+		stage3_reg(7), 
+		memo_addr, '0', 
+		stage3_reg(55 DOWNTO 40), 
+		stage3_reg(127 DOWNTO 96), 
+		memo_data16, 
+		memo_data32,
+		exp2,
+		exp1,
+		stage3_reg(6 DOWNTO 5)
+		);
 
 	--memory-writeback-buffer
 	MEM_WB_buffer : ENTITY work.MEM_WB_buffer PORT MAP (
