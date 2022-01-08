@@ -8,8 +8,8 @@ entity flush is
 		pcc : in std_logic;
 		jm : in std_logic_vector(2 downto 0);
 		Cond : in std_logic;
-      flush_jmp : out std_logic;
-      flush_call : out std_logic
+      	flush_jmp : out std_logic;
+      	flush_call : out std_logic
 	);
 end flush;
 

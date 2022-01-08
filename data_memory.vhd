@@ -28,10 +28,10 @@ begin
 	process (clk)
 	begin
 		if rising_edge(clk) then
-			if unsigned(addr) > x"FF00" and AddSrc = "00" then
+			if unsigned(addr) > x"FF00" and AddSrc = "01" then
 				ex2 <= '1';
 				ex1 <= '0';
-			elsif unsigned(addr) > x"FFFFE" and AddSrc = "01" then
+			elsif unsigned(addr) > x"FFFFF" and AddSrc = "10" then
 				ex1 <= '1';
 				ex2 <= '0';
 			else

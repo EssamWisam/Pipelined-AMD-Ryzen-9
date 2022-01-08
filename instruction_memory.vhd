@@ -20,9 +20,12 @@ architecture a_inst_memory of inst_memory is
       x"FECB",--exception 1
       x"0000",
       x"BCEF",--exception 2
+      x"0000",
+      x"20c4",
+      x"0000",
       x"0590",
+      x"2511",
       x"0610",
-      x"0482",
       others => (others=>'0')
   );
 begin
