@@ -44,6 +44,8 @@ ARCHITECTURE cpu OF cpu IS
 	signal freeze: std_logic;
 	signal flush_jmp: std_logic;
 	signal flush_call: std_logic;
+	signal exp1: std_logic;
+	signal exp2: std_logic;
 BEGIN
 	not_clk <= NOT clk;
 	--PC module
@@ -51,8 +53,8 @@ BEGIN
 	pc_reg:ENTITY work.pc port map (
 		clk,
 		rst,
-		stage4_reg(26),--ex1
-		stage4_reg(27),--ex2
+		exp1,--ex1
+		exp2,--ex2
 		freeze,--freeze
 		stage3_reg(25),--Cond
 		inst_memo(6),--isLongInst
@@ -267,7 +269,18 @@ BEGIN
 		stack_addr WHEN "01", --stack_addr
 		(OTHERS => '0') WHEN OTHERS;--temp
 	--memory module
-	data_memory : ENTITY work.data_memory PORT MAP(not_clk, stage3_reg(7), memo_addr, '0', stage3_reg(55 DOWNTO 40), stage3_reg(127 DOWNTO 96), memo_data16, memo_data32);
+	data_memory : ENTITY work.data_memory PORT MAP(
+		not_clk, 
+		stage3_reg(7), 
+		memo_addr, '0', 
+		stage3_reg(55 DOWNTO 40), 
+		stage3_reg(127 DOWNTO 96), 
+		memo_data16, 
+		memo_data32,
+		exp2,
+		exp1,
+		stage3_reg(6 DOWNTO 5)
+		);
 
 	--memory-writeback-buffer
 	MEM_WB_buffer : ENTITY work.MEM_WB_buffer PORT MAP (
