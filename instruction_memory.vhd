@@ -21,10 +21,14 @@ architecture a_inst_memory of inst_memory is
       x"0000",
       x"BCEF",--exception 2
       x"0000",
-      x"2082",
-      x"0590",
-      x"2511",
-      x"0610",
+      x"2481",
+      x"01c3",
+      x"000f",
+      x"0202",
+      x"2445",
+      x"000f",
+      x"2344",
+      x"000f",
       others => (others=>'0')
   );
 begin

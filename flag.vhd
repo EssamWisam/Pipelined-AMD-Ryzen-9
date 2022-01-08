@@ -23,7 +23,7 @@ begin
          elsif rising_edge(clk) and save='1' then
             tempFlag<=flag_in;
             flag_out <= flag_in;
-         elsif  rising_edge(clk) and restore='1' then
+         elsif rising_edge(clk) and restore='1' then
             flag_out<=tempFlag;
             tempFlag<=(others=>'0');
          elsif rising_edge(clk) then
