@@ -21,12 +21,12 @@ architecture a_inst_memory of inst_memory is
       x"0000",
       x"0000",--exception 2
       x"0000",
-      x"2481",--start instucrions
-      x"01c3",
-      x"000f",
-      x"0202",
-      x"2445",
-      x"000f",
+      x"0590",--start instucrions
+      x"0008",
+      x"4611",
+      x"0009",
+      x"4693",
+      x"2d91",
       x"2344",
       x"000f",
       others => (others=>'0')

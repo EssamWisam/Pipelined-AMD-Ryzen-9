@@ -41,6 +41,7 @@ ARCHITECTURE cpu OF cpu IS
 	signal extended_Rsrc : std_logic_vector(31 downto 0);
 	signal cs_2_3 : std_logic_vector(27 downto 0);
 	signal cond: std_logic;
+	signal freeze: std_logic;
 BEGIN
 	not_clk <= NOT clk;
 	--PC module
@@ -50,7 +51,7 @@ BEGIN
 		rst,
 		stage4_reg(26),--ex1
 		stage4_reg(27),--ex2
-		inst_memo(5),--freeze Note:Check with Ahmed
+		freeze,--freeze Note:Check with Ahmed
 		stage3_reg(25),--Cond
 		inst_memo(6),--isLongInst
 		stage3_reg(13 downto 12),--pc_src
@@ -115,15 +116,44 @@ BEGIN
 			ELSIF stage1_reg(4 DOWNTO 0) = "00101" THEN 			-- STD
 				CS <= "0000000000000000000010001101";
 			ELSIF stage1_reg(4 DOWNTO 0) = "01101" THEN             -- OUT
-			    CS <= "0000010000000000000000000000";
+				CS <= "0000010000000000000000000000";
 			ELSIF stage1_reg(4 DOWNTO 0) = "01110" THEN             -- IN
-			    CS <= "0000000000000100000000000010";	
-				--TODO:complete the CU logic
+				CS <= "0000000000000100000000000010";	
+			ELSIF stage1_reg(4 DOWNTO 0) = "11000" THEN 			-- JMP
+				CS <= "0000000000100010000000000000";
+			ELSIF stage1_reg(4 DOWNTO 0) = "11001" THEN 			-- JEQ
+				CS <= "0000000010100010000000000000";
+			ELSIF stage1_reg(4 DOWNTO 0) = "11010" THEN 			-- JNE
+				CS <= "0000000100100010000000000000";
+			ELSIF stage1_reg(4 DOWNTO 0) = "11011" THEN 			-- JLT
+				CS <= "0010000110100010000000000000";
+			ELSIF stage1_reg(4 DOWNTO 0) = "11110" THEN				-- INT
+				CS <= "0000001100101000000000000000";
+			ELSIF stage1_reg(4 DOWNTO 0) = "11100" THEN				-- CALL
+				CS <= "0000001000100010000000000000";
+			ELSIF stage1_reg(4 DOWNTO 0) = "01000" THEN				-- NOP
+				CS <= "0000000000000000000000000000";
+			ELSIF stage1_reg(4 DOWNTO 0) = "01001" THEN				-- HLT
+				CS <= "0001000000000000000000000000";
+			ELSIF stage1_reg(4 DOWNTO 0) = "11101" THEN				-- RET
+				CS <= "0000001010100001000000000000";
+			ELSIF stage1_reg(4 DOWNTO 0) = "11111" THEN				-- RTI
+				CS <= "0000001110110001000000000000";
+			ELSIF stage1_reg(4 DOWNTO 0) = "01011" THEN				-- NOT
+				CS <= "0000000000000000000000011100";
+
 			ELSE
 				CS <= "0000000000000000000000000000";
 			END IF;
 		END IF;
 	END PROCESS;
+	--frz module
+		frz_module: ENTITY work.frz port map (
+			not_clk,
+			rst,
+			stage1_reg(4 DOWNTO 0), --opcode
+			freeze --freeze
+			);
 
 	--decode-execute-buffer
 	ID_EX_buffer : ENTITY work.ID_EX_buffer PORT MAP (
