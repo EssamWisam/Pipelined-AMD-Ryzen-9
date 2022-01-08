@@ -71,7 +71,9 @@ BEGIN
 		X"00000004",--ex2_addr
 		stage4_reg(127 downto 96),--data_32
 		extended_Rsrc,--extended_Rsrc
-		pc_addr--next_addr
+		pc_addr,--next_addr
+		stage3_reg(127 DOWNTO 96), --pc for exp
+		inst_memo(31 downto 0) --pc for exp
 	);
 	--instruction memory module
 	instruction_memory: ENTITY work.inst_memory port map (

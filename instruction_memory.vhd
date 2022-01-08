@@ -21,8 +21,7 @@ architecture a_inst_memory of inst_memory is
       x"0000",
       x"BCEF",--exception 2
       x"0000",
-      x"20c4",
-      x"0000",
+      x"2082",
       x"0590",
       x"2511",
       x"0610",
