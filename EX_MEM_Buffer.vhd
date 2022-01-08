@@ -5,7 +5,8 @@ use ieee.numeric_std.all;
 entity EX_MEM_Buffer is
   port (
     clk:in std_logic ;
-    
+    rst:in std_logic ;
+    enable:in std_logic ;
     inCS            : in std_logic_vector   (27 downto 0);
     inG1            : in std_logic_vector   (8 downto 0);
     inRdst_index    : in std_logic_vector   (2  downto 0);
@@ -44,24 +45,18 @@ architecture EX_MEM of EX_MEM_Buffer is
     signal G2            : std_logic_vector   (15 downto 0);
 
 begin
-  --process (clk)
-	--begin
-	--	if falling_edge(clk) then
+
             outCS           <= CS         ;
             outRdst_index   <= Rdst_index ;
             outRsrc_data1   <= Rsrc_data1 ;
             outResult       <= Result     ;
             outInt_index    <= Int_index  ;
             outPC           <= PC         ;        
-            -- outRsrc1_index  <= Rsrc1_index;
-            -- outRsrc2_index  <= Rsrc2_index;
-            -- outG            <= G          ;
-	--	end if;
-        
-	--end process;
-  process (clk)
+
+  process (clk,rst)
 	begin
 		if rising_edge(clk) then
+      if (enable = '1' and rst /= '1') then
             CS           <= inCS         ;
             Rdst_index   <= inRdst_index ;
             Rsrc_data1   <= inRsrc_data1 ;
@@ -72,8 +67,20 @@ begin
             Rsrc2_index  <= inRsrc2_index;
             G2           <= inG2         ;
             G1           <= inG1         ;
-		end if;
-        
+      end if;
+      if (rst = '1') then
+            CS           <= (others=>'0');
+            Rdst_index   <= (others=>'0');
+            Rsrc_data1   <= (others=>'0');
+            Int_index    <= (others=>'0');
+            Result       <= (others=>'0');
+            PC           <= (others=>'0');     
+            Rsrc1_index  <= (others=>'0');
+            Rsrc2_index  <= (others=>'0');
+            G2           <= (others=>'0');
+            G1           <= (others=>'0');
+      end if;        
+		end if;  
 	end process;
 
 end EX_MEM ; -- EX_MEM

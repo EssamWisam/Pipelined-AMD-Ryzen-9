@@ -5,7 +5,8 @@ use ieee.numeric_std.all;
 entity IF_ID_Buffer is
   port (
     clk:in std_logic ;
-    
+    rst:in std_logic ;
+    enable:in std_logic ;
     inInstruction   : in std_logic_vector   (15 downto 0);
     inImm           : in std_logic_vector   (15 downto 0);
     inPC            : in std_logic_vector   (31 downto 0);
@@ -35,9 +36,7 @@ architecture IF_ID of IF_ID_Buffer is
     signal PC            : std_logic_vector   (31 downto 0);
 
 begin
-  -- process (clk)
-	-- begin
-	-- 	if falling_edge(clk) then
+
             outOpCode       <= opCode     ;
             outImm          <= Imm        ;
             outRdst_index   <= Rdst_index ;
@@ -45,12 +44,11 @@ begin
             outRsrc2_index  <= Rsrc2_index;
             outInt_index    <= Int_index  ;
             outPC           <= PC;        
-		-- end if;
-        
-	-- end process;
-  process (clk)
+
+  process (clk,rst)
 	begin
 		if rising_edge(clk) then
+      if (enable = '1' and  rst /= '1') then
             opCode       <= inInstruction (6  downto  0) ;
             Rdst_index   <= inInstruction (9  downto  7) ;
             Rsrc1_index  <= inInstruction (12 downto 10) ;
@@ -59,8 +57,18 @@ begin
             Imm          <= inImm ;
             PC           <= inPC ;        
             G            <= inG ;
-		end if;
-        
+      end if; 
+      if (rst = '1') then 
+            opCode       <= (others=>'0');
+            Rdst_index   <= (others=>'0');
+            Rsrc1_index  <= (others=>'0');
+            Rsrc2_index  <= (others=>'0');
+            Int_index    <= (others=>'0');
+            Imm          <= (others=>'0');
+            PC           <= (others=>'0');      
+            G            <= (others=>'0');       
+      end if;     
+		end if;    
 	end process;
 
 

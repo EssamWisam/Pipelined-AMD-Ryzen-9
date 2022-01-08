@@ -5,7 +5,8 @@ use ieee.numeric_std.all;
 entity MEM_WB_Buffer is
   port (
     clk:in std_logic ;
-    
+    rst:in std_logic ;
+    enable:in std_logic ;
     inCS           : in std_logic_vector   (27 downto 0);
     inG            : in std_logic_vector   (8 downto 0);
     inRdst_index   : in std_logic_vector   (2  downto 0);
@@ -46,20 +47,18 @@ architecture MEM_WB of MEM_WB_Buffer is
     signal G4            : std_logic_vector   (2  downto 0);
 
 begin
---   process (clk)
--- 	begin
--- 		if falling_edge(clk) then
-            outCS           <= CS         ;
-            outRdst_index   <= Rdst_index ;
-            outResult       <= Result     ;
-            outData32       <= Data32     ;
-            outData16       <= Data16     ;
---		end if;
+  
 
---	end process;
-  process (clk)
+  outCS           <= CS         ;
+  outRdst_index   <= Rdst_index ;
+  outResult       <= Result     ;
+  outData32       <= Data32     ;
+  outData16       <= Data16     ;
+
+  process (clk,rst)
 	begin
 		if rising_edge(clk) then
+      if (enable = '1' and  rst /= '1') then
             CS          <= inCS        ;
             Rdst_index  <= inRdst_index;
             Result      <= inResult    ;
@@ -70,8 +69,19 @@ begin
             G2          <= inG2        ;
             G3          <= inG3        ;        
             G4          <= inG4        ;
-		end if;
-        
+      end if; 
+      if (rst = '1') then
+            CS          <= (others=>'0');
+            Rdst_index  <= (others=>'0');
+            Result      <= (others=>'0');
+            Data16      <= (others=>'0');
+            Data32      <= (others=>'0');
+            Rsrc_data1  <= (others=>'0');
+            G           <= (others=>'0');
+            G2          <= (others=>'0');
+            G3          <= (others=>'0');
+            G4          <= (others=>'0');  
+      end if;     
+		end if; 
 	end process;
-
 end MEM_WB ; -- MEM_WB

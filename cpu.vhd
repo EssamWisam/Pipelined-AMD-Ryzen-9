@@ -70,6 +70,8 @@ BEGIN
 	--fetch-decode-buffer
 	IF_ID_buffer : ENTITY work.IF_ID_buffer PORT MAP (
 		clk,
+		rst,
+		'1',
 		inst_memo(15 DOWNTO 0), 										--inInstruction
 		inst_memo(31 DOWNTO 16), 										--inImm
 		pc_addr, 														--pc
@@ -128,6 +130,8 @@ BEGIN
 	--decode-execute-buffer
 	ID_EX_buffer : ENTITY work.ID_EX_buffer PORT MAP (
 		clk,
+		rst,
+		'1',
 		CS,
 		"000000000", 					--inG
 		stage1_reg(9 DOWNTO 7), 	--inRdst_index
@@ -194,6 +198,8 @@ BEGIN
 	--execute-memory-buffer
 	EX_MEM_buffer : ENTITY work.EX_MEM_buffer PORT MAP (
 		clk,
+		rst,
+		'1',
 		cs_2_3, 	--inCS
 		stage2_reg(36 DOWNTO 28), 	--inG1
 		stage2_reg(39 DOWNTO 37), 	--inRdst_index
@@ -227,6 +233,8 @@ BEGIN
 	--memory-writeback-buffer
 	MEM_WB_buffer : ENTITY work.MEM_WB_buffer PORT MAP (
 		clk,
+		rst,
+		'1',
 		stage3_reg(27 DOWNTO 0), 	--inCS
 		stage3_reg(36 DOWNTO 28), 	--inG
 		stage3_reg(39 DOWNTO 37), 	--inRdst_index

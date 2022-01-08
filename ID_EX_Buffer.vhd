@@ -5,7 +5,8 @@ use ieee.numeric_std.all;
 entity ID_EX_Buffer is
   port (
     clk:in std_logic ;
-    
+    rst:in std_logic ;
+    enable:in std_logic ;
     inCS            : in std_logic_vector   (27 downto 0);
     inG             : in std_logic_vector   (8 downto 0);
     inRdst_index    : in std_logic_vector   (2  downto 0);
@@ -46,9 +47,7 @@ architecture ID_EX of ID_EX_Buffer is
     signal PC            : std_logic_vector   (31 downto 0);
 
 begin
-  -- process (clk)
-	-- begin
-	-- 	if falling_edge(clk) then
+
             outCS           <= CS         ;
             outG            <= G          ;
             outRdst_index   <= Rdst_index ;
@@ -59,12 +58,11 @@ begin
             outRsrc1_index  <= Rsrc1_index;
             outRsrc2_index  <= Rsrc2_index;
             outPC           <= PC         ;        
-		-- end if;
-        
-	-- end process;
-  process (clk)
+
+  process (clk,rst)
 	begin
 		if rising_edge(clk) then
+      if (enable = '1' and  rst /= '1') then
             CS           <= inCS         ;
             G            <= inG          ;
             Rdst_index   <= inRdst_index ;
@@ -74,9 +72,21 @@ begin
             Int_index    <= inInt_index  ;
             Rsrc1_index  <= inRsrc1_index;
             Rsrc2_index  <= inRsrc2_index;
-            PC           <= inPC         ;        
+            PC           <= inPC         ; 
+      end if; 
+      if (rst = '1') then
+            CS           <= (others=>'0');
+            G            <= (others=>'0');
+            Rdst_index   <= (others=>'0');
+            Rsrc_data1   <= (others=>'0');
+            Rsrc_data2   <= (others=>'0');
+            Imm          <= (others=>'0');
+            Int_index    <= (others=>'0');
+            Rsrc1_index  <= (others=>'0');
+            Rsrc2_index  <= (others=>'0');
+            PC           <= (others=>'0');
+      end if;             
 		end if;
-        
 	end process;
 
 end ID_EX ; -- ID_EX
