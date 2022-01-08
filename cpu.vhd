@@ -33,6 +33,8 @@ ARCHITECTURE cpu OF cpu IS
 	SIGNAL MUX2_SEL      :   std_logic_vector(1 downto 0);
 	SIGNAL MUX3_SEL      :   std_logic_vector(1 downto 0);
 	SIGNAL MUX1_RESULT   :    std_logic_vector(15 DOWNTO 0);
+	SIGNAL ID_EX_FLUSH   :  STD_LOGIC;
+	SIGNAL IF_ID_enable  :  STD_LOGIC;
 
 	-- flag register signals:
 	signal flag_in : std_logic_vector(3 downto 0);
@@ -101,7 +103,7 @@ BEGIN
 	IF_ID_buffer : ENTITY work.IF_ID_buffer PORT MAP (
 		clk,
 		rst or flush_jmp or exp1 or exp2 or exp_fetch_bool,
-		'1',
+		IF_ID_enable,
 		inst_memo(15 DOWNTO 0), 										--inInstruction
 		inst_memo(31 DOWNTO 16), 										--inImm
 		pc_addr, 														--pc
@@ -185,11 +187,25 @@ BEGIN
 		stage1_reg(4 DOWNTO 0), --opcode
 		freeze --freeze
 		);
+ 
+	HAZARD_DETECTION_UNIT: ENTITY WORK.HDU PORT MAP (
+		stage2_reg(27 DOWNTO 0),
+		stage3_reg(27 DOWNTO 0), 
+		stage4_reg(27 DOWNTO 0),
+		stage1_reg(12 DOWNTO 10), 										--outRsrc1_index IF/ID
+		stage1_reg(15 DOWNTO 13), 										--outRsrc2_index IF/ID
+	    stage2_reg(39 DOWNTO 37), 	                                    --outRdst_index  ID/EX
+		stage3_reg(39 DOWNTO 37), 	                                    --outRdst_index  EX/MEM
+		stage4_reg(39 DOWNTO 37), 	                                    --outRdst_index  MEM/WB
+		IF_ID_enable,
+		freeze,
+		ID_EX_FLUSH
+	    );	
 
 	--decode-execute-buffer
 	ID_EX_buffer : ENTITY work.ID_EX_buffer PORT MAP (
 		clk,
-		rst or flush_jmp or exp1 or exp2,
+		rst or flush_jmp or exp1 or exp2 OR ID_EX_FLUSH,
 		'1',
 		CS,
 		"000000000", 					--inG

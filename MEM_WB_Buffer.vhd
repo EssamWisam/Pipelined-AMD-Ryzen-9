@@ -55,10 +55,10 @@ begin
   outData32       <= Data32     ;
   outData16       <= Data16     ;
 
-  process (clk,rst)
+  process (clk,rst,enable)
 	begin
 		if rising_edge(clk) then
-      if (enable = '1' and  rst /= '1') then
+      if (enable /= '0' and  rst /= '1') then
             CS          <= inCS        ;
             Rdst_index  <= inRdst_index;
             Result      <= inResult    ;

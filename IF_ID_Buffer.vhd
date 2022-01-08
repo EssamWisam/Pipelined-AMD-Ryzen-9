@@ -45,10 +45,10 @@ begin
             outInt_index    <= Int_index  ;
             outPC           <= PC;        
 
-  process (clk,rst)
+  process (clk,rst,enable)
 	begin
 		if rising_edge(clk) then
-      if (enable = '1' and  rst /= '1') then
+      if (enable /= '0' and  rst /= '1') then
             opCode       <= inInstruction (6  downto  0) ;
             Rdst_index   <= inInstruction (9  downto  7) ;
             Rsrc1_index  <= inInstruction (12 downto 10) ;

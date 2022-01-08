@@ -59,10 +59,10 @@ begin
             outRsrc2_index  <= Rsrc2_index;
             outPC           <= PC         ;        
 
-  process (clk,rst)
+  process (clk,rst,enable)
 	begin
 		if rising_edge(clk) then
-      if (enable = '1' and  rst /= '1') then
+      if (enable /= '0' and  rst /= '1') then
             CS           <= inCS         ;
             G            <= inG          ;
             Rdst_index   <= inRdst_index ;

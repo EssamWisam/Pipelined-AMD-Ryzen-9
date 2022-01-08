@@ -53,10 +53,10 @@ begin
             outInt_index    <= Int_index  ;
             outPC           <= PC         ;        
 
-  process (clk,rst)
+  process (clk,rst,enable)
 	begin
 		if rising_edge(clk) then
-      if (enable = '1' and rst /= '1') then
+      if (enable /= '0' and rst /= '1') then
             CS           <= inCS         ;
             Rdst_index   <= inRdst_index ;
             Rsrc_data1   <= inRsrc_data1 ;
