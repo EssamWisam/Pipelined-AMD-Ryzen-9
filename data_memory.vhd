@@ -10,9 +10,11 @@ entity data_memory is
 		data_in_16 : in std_logic_vector(15 downto 0);
 		data_in_32 : in std_logic_vector(31 downto 0);
 		data_out_16 : out std_logic_vector(15 downto 0);
-		data_out_32 : out std_logic_vector(31 downto 0)
+		data_out_32 : out std_logic_vector(31 downto 0);
+		ex2: out std_logic;
+		ex1: out std_logic;
+		AddSrc:in std_logic_vector(1 downto 0)
 	);
-	
 end data_memory;
 architecture data_memory of data_memory is
 	type ram_type is array (0 to 2 ** 20 - 1) of std_logic_vector(15 downto 0);
@@ -26,10 +28,20 @@ begin
 	process (clk)
 	begin
 		if rising_edge(clk) then
-			data_16_reg <= ram_data(to_integer(unsigned(addr)));
-			if is_32_bit = '1' then
-				data_32_reg(31 downto 16) <= ram_data(to_integer(unsigned(addr)));--upper endian
-				data_32_reg(15 downto 0) <= ram_data(to_integer(unsigned(addr)) - 1);
+			if unsigned(addr) > x"FF00" and AddSrc = "00" then
+				ex2 <= '1';
+				ex1 <= '0';
+			elsif unsigned(addr) > x"FFFFE" and AddSrc = "01" then
+				ex1 <= '1';
+				ex2 <= '0';
+			else
+				ex1 <= '0';
+				ex2 <= '0';
+				data_16_reg <= ram_data(to_integer(unsigned(addr)));
+				if is_32_bit = '1' then
+					data_32_reg(31 downto 16) <= ram_data(to_integer(unsigned(addr)));--upper endian
+					data_32_reg(15 downto 0) <= ram_data(to_integer(unsigned(addr)) - 1);
+				end if;
 			end if;
 		end if;
 	end process;
