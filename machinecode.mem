@@ -1,0 +1,5 @@
+// memory data file (do not edit the following line - required for mem load use)
+// instance=/cpu/instruction_memory/ram_data
+// format=mti addressradix=h dataradix=h version=1.0 wordsperline=15 noaddress
+0000 0000 0000 0000 0000 0000 0590 0008 4611 0009 4693 2D91 2344 000F 0000
+0000 0000 
