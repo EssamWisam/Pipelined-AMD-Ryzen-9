@@ -7,7 +7,12 @@ add wave -position end  sim:/cpu/inst_memo
 add wave -position end  sim:/cpu/in_port
 add wave -position end  sim:/cpu/out_port
 add wave -position end  sim:/cpu/alu_result
-
+add wave -position end  sim:/cpu/MUX2_SEL
+add wave -position end  sim:/cpu/MUX3_SEL
+add wave -position end  sim:/cpu/alu_operand1
+add wave -position end  sim:/cpu/alu_operand1
+add wave -position end  sim:/cpu/wb_data
+add wave -position end  sim:/stage3_reg
 
 add wave -position end  sim:/cpu/reg_file/reg0
 add wave -position end  sim:/cpu/reg_file/reg1
@@ -31,6 +36,8 @@ force -freeze sim:/cpu/inst_memo 00000000000000000100011000010001 0
 run
 force -freeze sim:/cpu/inst_memo 00000000000000001100011010010001 0
 run
+force -freeze sim:/cpu/inst_memo 00000000000000001000101110010001 0
+run 
 force -freeze sim:/cpu/inst_memo 00000000000000000010110110010001 0
 run
 force -freeze sim:/cpu/inst_memo 00000000000000000000110000001101 0
