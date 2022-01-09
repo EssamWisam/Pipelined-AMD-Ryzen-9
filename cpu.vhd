@@ -165,7 +165,7 @@ BEGIN
 			ELSIF stage1_reg(4 DOWNTO 0) = "11110" THEN				-- INT
 				CS <= "0000001100101000000001000000";
 			ELSIF stage1_reg(4 DOWNTO 0) = "11100" THEN				-- CALL
-				CS <= "0000001000100010000001000000";
+				CS <= "0000001000100010010011000000";
 			ELSIF stage1_reg(4 DOWNTO 0) = "01000" THEN				-- NOP
 				CS <= "0000000000000000000000000000";
 			ELSIF stage1_reg(4 DOWNTO 0) = "01001" THEN				-- HLT
@@ -175,7 +175,7 @@ BEGIN
 			ELSIF stage1_reg(4 DOWNTO 0) = "11111" THEN				-- RTI
 				CS <= "0000001110110001000001000000";
 			ELSIF stage1_reg(4 DOWNTO 0) = "01011" THEN				-- NOT
-				CS <= "0000000000000000000000011100";
+				CS <= "0000000000000100000000011100";
 
 			ELSE
 				CS <= "0000000000000000000000000000";
@@ -341,7 +341,7 @@ BEGIN
 		(OTHERS => '0') WHEN OTHERS;--temp
 	-- ____________________________________________________________________________________
 	-- RET, RTI, INT, CALL
-	 is_RET_RTI_INT_CALL <= '1' when (stage3_reg(6 downto 5)&stage3_reg(18 downto 17)="0110") else '0';	-- AddSrc=10, PCC=01 ===> RET|RTI|INT|CALL
+	 is_RET_RTI_INT_CALL <= '1' when (stage3_reg(6 downto 5)&stage3_reg(18 downto 17)="1001") else '0';	-- AddSrc=10, PCC=01 ===> RET|RTI|INT|CALL
 	-- ____________________________________________________________________________________
 
 	 --memory module

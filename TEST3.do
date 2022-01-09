@@ -21,13 +21,13 @@ force -freeze sim:/cpu/clk 0 0, 1 {50 ps} -r 100
 force -freeze sim:/cpu/reg_file/rst 1 0
 run
 force -freeze sim:/cpu/reg_file/rst 0 0
-force -freeze sim:/cpu/in_port  X\"5\" 0
 run
 run
+force -freeze sim:/cpu/in_port  X\"19\" 0  
 run
+force -freeze sim:/cpu/in_port  X\"FFFF\" 0
 run
-run
-run
+force -freeze sim:/cpu/in_port  X\"F320\" 0
 run
 force -freeze sim:/cpu/in_port  X\"10\" 0
 run
@@ -38,14 +38,36 @@ run
 run
 run
 run
-#SETC           #C --> 1
-#NOP            #No change
-#NOT R1         #R1 =FFFF , C--> no change, N --> 1, Z --> 0
-#INC R1	       #R1 =0000 , C --> 1 , N --> 0 , Z --> 1
-#IN R1	       #R1= 5,add 5 on the in port,flags no change	
-#IN R2          #R2= 10,add 10 on the in port, flags no change
-#NOT R2	       #R2= FFFFFFEF, C--> no change, N -->1,Z-->0
-#INC R1         #R1= 6, C --> 0, N -->0, Z-->0
-#OUT R1
-#OUT R2
-#HLT
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+
+#IN R2        #R2=19 add 19 in R2
+#IN R3        #R3=FFFF
+#IN R4        #R4=F320
+#LDM R1,5     #R1=5
+#PUSH R1      #SP=FFFFFFFE,M[FFFFFFFF]=5
+#PUSH R2      #SP=FFFFFFFD,M[FFFFFFFE]=19
+#POP R1       #SP=FFFFFFFE,R1=19
+#POP R2       #SP=FFFFFFFF,R2=5
+#IN R5        #R5= 10, you should run this test case another time and load R5 with FD60
+#STD R2,200(R5)   #M[210]=5, Exception in the 2nd run
+#STD R1,201(R5)   #M[211]=19
+#LDD R3,201(R5)   #R3=19
+#LDD R4,200(R5)   #R4=5
+#POP R3  #exception
+#ADD R1, R2, R3 #should not execute as their is an exception

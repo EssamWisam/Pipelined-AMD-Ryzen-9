@@ -30,7 +30,7 @@ begin
 				elsif jm = "010" and (flag_out(1 downto 0)="11" or flag_out(1 downto 0)="01") then	-- Check if carry
 					Cond_reg <= '1';
 					flag_in(1 downto 0) <= "00";
-				elsif jm = "011" then
+				elsif jm >= "011" then
 					Cond_reg <= '1';
 					flag_in <= flag_out;
 				else

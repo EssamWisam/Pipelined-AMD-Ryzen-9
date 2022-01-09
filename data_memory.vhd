@@ -40,7 +40,7 @@ begin
 				data_16_reg <= ram_data(to_integer(unsigned(addr)));
 				if is_32_bit = '1' then
 					data_32_reg(31 downto 16) <= ram_data(to_integer(unsigned(addr)));--upper endian
-					data_32_reg(15 downto 0) <= ram_data(to_integer(unsigned(addr)) - 1);
+					data_32_reg(15 downto 0) <= ram_data(to_integer(unsigned(addr)) + 1);
 				end if;
 			end if;
 		end if;

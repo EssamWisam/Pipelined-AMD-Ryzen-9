@@ -21,7 +21,15 @@ force -freeze sim:/cpu/clk 0 0, 1 {50 ps} -r 100
 force -freeze sim:/cpu/reg_file/rst 1 0
 run
 force -freeze sim:/cpu/reg_file/rst 0 0
-force -freeze sim:/cpu/in_port  X\"5\" 0
+run
+run
+force -freeze sim:/cpu/in_port  X\"5\" 0  
+run
+force -freeze sim:/cpu/in_port  X\"19\" 0
+run
+force -freeze sim:/cpu/in_port  X\"FFFF\" 0
+run
+force -freeze sim:/cpu/in_port  X\"F320\" 0
 run
 run
 run
@@ -29,23 +37,20 @@ run
 run
 run
 run
-force -freeze sim:/cpu/in_port  X\"10\" 0
 run
 run
 run
 run
 run
 run
-run
-run
-#SETC           #C --> 1
-#NOP            #No change
-#NOT R1         #R1 =FFFF , C--> no change, N --> 1, Z --> 0
-#INC R1	       #R1 =0000 , C --> 1 , N --> 0 , Z --> 1
-#IN R1	       #R1= 5,add 5 on the in port,flags no change	
-#IN R2          #R2= 10,add 10 on the in port, flags no change
-#NOT R2	       #R2= FFFFFFEF, C--> no change, N -->1,Z-->0
-#INC R1         #R1= 6, C --> 0, N -->0, Z-->0
-#OUT R1
-#OUT R2
-#HLT
+
+#IN R1        #add 5 in R1
+#IN R2        #add 19 in R2
+#IN R3        #FFFF
+#IN R4        #F320
+#MOV R3,R5    #R5 = FFFF , flags no change
+#ADD R4,R1,R4    #R4= F325 , C-->0, N-->1, Z-->0
+#SUB R6,R5,R4    #R6= 0CDA , C-->0, N-->0,Z-->0 here carry is implemented as borrow you can implement it as not borrow
+#AND R4,R7,R4    #R4= 0000 , C-->no change, N-->0, Z-->1
+#IADD R2,R2,FFFF #R2= 0018 (C = 1,N,Z= 0)
+#ADD R2,R1,R2    #R2= 001D (C,N,Z= 0)
