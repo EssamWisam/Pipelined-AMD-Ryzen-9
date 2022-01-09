@@ -15,7 +15,8 @@ add wave -position end  sim:/cpu/reg_file/reg4
 add wave -position end  sim:/cpu/reg_file/reg5
 add wave -position end  sim:/cpu/reg_file/reg6
 add wave -position end  sim:/cpu/reg_file/reg7
-
+add wave -position 2 sim:/cpu/stack_module/*
+add wave -position end sim:/cpu/data_memory/*
 
 force -freeze sim:/cpu/clk 0 0, 1 {50 ps} -r 100
 force -freeze sim:/cpu/reg_file/rst 1 0
