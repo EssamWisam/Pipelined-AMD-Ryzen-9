@@ -24,6 +24,7 @@ architecture a_inst_memory of inst_memory is
       x"2481",
       x"01c3",
       x"000f",
+      x"2f91",
       x"0202",
       x"2445",
       x"000f",
