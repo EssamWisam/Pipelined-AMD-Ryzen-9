@@ -21,6 +21,11 @@ architecture a_inst_memory of inst_memory is
       x"0000",
       x"0150",--exception 2
       x"0000",
+      x"018a",
+      x"0188",
+      x"048b",
+      x"048c",
+      x"008e",
       x"010e",
       x"018e",
       x"020e",
