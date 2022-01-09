@@ -104,7 +104,7 @@ BEGIN
 	--fetch-decode-buffer
 	IF_ID_buffer : ENTITY work.IF_ID_buffer PORT MAP (
 		clk,
-		rst or flush_jmp or exp1 or exp2 or exp_fetch_bool,
+		rst or flush_jmp or exp1 or exp2 or exp_fetch_bool or cond,
 		IF_ID_enable,
 		inst_memo(15 DOWNTO 0), 										--inInstruction
 		inst_memo(31 DOWNTO 16), 										--inImm
@@ -199,7 +199,7 @@ BEGIN
 		stage4_reg(27 DOWNTO 0),
 		stage1_reg(12 DOWNTO 10), 										--outRsrc1_index IF/ID
 		stage1_reg(15 DOWNTO 13), 										--outRsrc2_index IF/ID
-	    stage2_reg(39 DOWNTO 37), 	                                    --outRdst_index  ID/EX
+		stage2_reg(39 DOWNTO 37), 	                                    --outRdst_index  ID/EX
 		stage3_reg(39 DOWNTO 37), 	                                    --outRdst_index  EX/MEM
 		stage4_reg(39 DOWNTO 37), 	                                    --outRdst_index  MEM/WB
 		IF_ID_enable,
@@ -210,7 +210,7 @@ BEGIN
 	--decode-execute-buffer
 	ID_EX_buffer : ENTITY work.ID_EX_buffer PORT MAP (
 		clk,
-		rst or flush_jmp or exp1 or exp2 OR ID_EX_FLUSH,
+		rst or flush_jmp or exp1 or exp2 OR ID_EX_FLUSH or cond,
 		'1',
 		CS,
 		"000000000", 					--inG
