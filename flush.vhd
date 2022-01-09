@@ -21,11 +21,8 @@ begin
 	process (clk)
 	begin
 		if rising_edge(clk) then
-         if pcc='1' and Cond='1' and jm < "100" then        -- need to check that 0<=jmp<=4
+         if pcc='1' and Cond='1' then        -- need to check that 0<=jmp<=4
             jmp_reg <= '1';
-         elsif
-            pcc='1' and Cond='1' and jm > "011" then
-            call_reg <= '1';
 		   else
 			   jmp_reg <='0';
             call_reg <= '0';
