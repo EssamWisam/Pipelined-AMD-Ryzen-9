@@ -21,17 +21,20 @@ begin
 	process (clk)
 	begin
 		if rising_edge(clk) then
-         if pcc='1' and Cond='1' and jm < "100" then        -- need to check that 0<=jmp<=4
-            jmp_reg <= '1';
-         elsif
-            pcc='1' and Cond='1' and jm > "011" then
-            call_reg <= '1';
-		   else
-			   jmp_reg <='0';
-            call_reg <= '0';
+        	if pcc='1' and Cond='1' and jm < "100" then        -- need to check that 0<=jmp<=4
+        	    jmp_reg <= '1';
+        	elsif
+        	    pcc='1' and Cond='1' and jm > "011" then
+        	    call_reg <= '1';
+			else
+				jmp_reg <='0';
+        	    call_reg <= '0';
          end if;
 		end if;
 	end process;
+	--	jmp_reg <= '1' when pcc='1' and Cond='1' and jm < "100" else '0';
+	--  call_reg<= '1' when pcc='1' and Cond='1' and jm > "011" else
+
 	flush_jmp <= jmp_reg;
-   flush_call <= call_reg;
+    flush_call <= call_reg;
 end flush;

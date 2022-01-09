@@ -43,5 +43,7 @@ begin
 		address <=
 		address_reg when "010",
 		address_reg when "100",
-		address_reg_temp_pop when others;
+		address_reg_temp_pop when "001",
+		address_reg_temp_pop when "011",
+		(others=>'0') when others;
 end stack_module;

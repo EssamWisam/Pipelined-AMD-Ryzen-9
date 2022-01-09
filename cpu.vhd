@@ -119,65 +119,7 @@ BEGIN
 	--regester file module
 	reg_file : ENTITY work.reg_file PORT MAP(not_clk, rst, stage1_reg(12 DOWNTO 10), stage1_reg(15 DOWNTO 13), stage4_reg(39 DOWNTO 37), wb_data, stage4_reg(14), read_data1, read_data2);
 	--CU logic
-	PROCESS (not_clk)
-	BEGIN
-		IF rising_edge(not_clk) THEN
-			IF stage1_reg(4 DOWNTO 0) = "10000" THEN    			-- mov
-				CS <= "0000000000000100000000000000";
-			ELSIF stage1_reg(4 DOWNTO 0) = "01100" THEN 			-- inc
-				CS <= "0000000000000100000000010100";
-			ELSIF stage1_reg(4 DOWNTO 0) = "01010" THEN 			-- setc
-				CS <= "0000000000000000000000011000";	
-			ELSIF stage1_reg(4 DOWNTO 0) = "10001" THEN 			-- add
-				CS <= "0000000000000100000000001100";
-			ELSIF stage1_reg(4 DOWNTO 0) = "10010" THEN 			-- sub
-				CS <= "0000000000000100000000010000";
-			ELSIF stage1_reg(4 DOWNTO 0) = "10011" THEN 			-- and
-				CS <= "0000000000000100000000001000";
-			ELSIF stage1_reg(4 DOWNTO 0) = "10100" THEN 			-- iadd
-				CS <= "0000000000000100000000001101";
-			ELSIF stage1_reg(4 DOWNTO 0) = "00001" THEN 			-- PUSH
-				CS <= "0000000000000000001011000000";
-			ELSIF stage1_reg(4 DOWNTO 0) = "00010" THEN 			-- POP
-				CS <= "0000000000000100100101000000";
-			ELSIF stage1_reg(4 DOWNTO 0) = "00011" THEN 			-- LDM
-				CS <= "0000000000000100000000000001";
-			ELSIF stage1_reg(4 DOWNTO 0) = "00100" THEN 			-- LDD
-				CS <= "0000000000000100100000101101";
-			ELSIF stage1_reg(4 DOWNTO 0) = "00101" THEN 			-- STD
-				CS <= "0000000000000000000010101101";
-			ELSIF stage1_reg(4 DOWNTO 0) = "01101" THEN             -- OUT
-				CS <= "0000010000000000000000000000";
-			ELSIF stage1_reg(4 DOWNTO 0) = "01110" THEN             -- IN
-				CS <= "0000000000000100000000000010";	
-			ELSIF stage1_reg(4 DOWNTO 0) = "11000" THEN 			-- JMP
-				CS <= "0000000000100010000000000000";
-			ELSIF stage1_reg(4 DOWNTO 0) = "11001" THEN 			-- JEQ
-				CS <= "0000000010100010000000000000";
-			ELSIF stage1_reg(4 DOWNTO 0) = "11010" THEN 			-- JNE
-				CS <= "0000000100100010000000000000";
-			ELSIF stage1_reg(4 DOWNTO 0) = "11011" THEN 			-- JLT
-				CS <= "0010000110100010000000000000";
-			ELSIF stage1_reg(4 DOWNTO 0) = "11110" THEN				-- INT
-				CS <= "0000001100101000000001000000";
-			ELSIF stage1_reg(4 DOWNTO 0) = "11100" THEN				-- CALL
-				CS <= "0000001000100010000001000000";
-			ELSIF stage1_reg(4 DOWNTO 0) = "01000" THEN				-- NOP
-				CS <= "0000000000000000000000000000";
-			ELSIF stage1_reg(4 DOWNTO 0) = "01001" THEN				-- HLT
-				CS <= "0001000000000000000000000000";
-			ELSIF stage1_reg(4 DOWNTO 0) = "11101" THEN				-- RET
-				CS <= "0000001010100001000001000000";
-			ELSIF stage1_reg(4 DOWNTO 0) = "11111" THEN				-- RTI
-				CS <= "0000001110110001000001000000";
-			ELSIF stage1_reg(4 DOWNTO 0) = "01011" THEN				-- NOT
-				CS <= "0000000000000000000000011100";
-
-			ELSE
-				CS <= "0000000000000000000000000000";
-			END IF;
-		END IF;
-	END PROCESS;
+	CU : entity work.CU port map(not_clk,stage1_reg(6 DOWNTO 0),CS);
 	--frz module
 	frz_module: ENTITY work.frz port map (
 		not_clk,
@@ -302,7 +244,7 @@ BEGIN
 
 	--memory logic
 	--Stack pointer
-	stack_module : ENTITY work.stack_module PORT MAP(clk, rst, stage3_reg(10 DOWNTO 8), stack_addr);	-- stage3_reg(10 downto 8): SPA
+	stack_module : ENTITY work.stack_module PORT MAP(not_clk, rst, stage3_reg(10 DOWNTO 8), stack_addr);	-- stage3_reg(10 downto 8): SPA
 	--mux5(memo_addr)
 	WITH stage3_reg(6 DOWNTO 5) SELECT	-- stage3_reg(6 downto 5): AddSrc 
 	memo_addr <=
