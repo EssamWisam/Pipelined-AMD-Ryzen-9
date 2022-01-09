@@ -5,7 +5,6 @@ add wave -position end  sim:/cpu/in_port
 add wave -position end  sim:/cpu/out_port
 add wave -position end  sim:/cpu/pc_addr
 add wave -position end  sim:/cpu/pc_reg/epc
-add wave -position end  sim:/cpu/stack_addr
 add wave -position end  sim:/cpu/flag_out
 add wave -position end  sim:/cpu/reg_file/reg0
 add wave -position end  sim:/cpu/reg_file/reg1
@@ -15,9 +14,10 @@ add wave -position end  sim:/cpu/reg_file/reg4
 add wave -position end  sim:/cpu/reg_file/reg5
 add wave -position end  sim:/cpu/reg_file/reg6
 add wave -position end  sim:/cpu/reg_file/reg7
-add wave -position 2 sim:/cpu/stack_module/*
-add wave -position end sim:/cpu/data_memory/*
-
+add wave -position end  sim:/cpu/memo_addr
+add wave -position end  sim:/cpu/stage3_reg
+add wave -position 6  sim:/cpu/exp1
+add wave -position 7  sim:/cpu/exp2
 force -freeze sim:/cpu/clk 0 0, 1 {50 ps} -r 100
 force -freeze sim:/cpu/reg_file/rst 1 0
 run
@@ -30,7 +30,7 @@ force -freeze sim:/cpu/in_port  X\"FFFF\" 0
 run
 force -freeze sim:/cpu/in_port  X\"F320\" 0
 run
-force -freeze sim:/cpu/in_port  X\"10\" 0
+force -freeze sim:/cpu/in_port  X\"FD60\" 0
 run
 run
 run
