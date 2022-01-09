@@ -25,16 +25,16 @@ end HDU;
 architecture HDU of HDU is
 begin
     
-    IF_ID_enable<=  '0' when ((CS_ID_EX ="0000000000000100100000101101" or CS_ID_EX ="0000000000000100000000000001")  and (IF_ID_Rsrc1=ID_EX_Rdst  or IF_ID_Rsrc2=ID_EX_Rdst )) else
-                    '0' when ((CS_EX_MEM="0000000000000100100000101101" or CS_EX_MEM="0000000000000100000000000001")  and (IF_ID_Rsrc1=EX_MEM_Rdst or IF_ID_Rsrc2=EX_MEM_Rdst)) else
+    IF_ID_enable<=  '0' when (CS_ID_EX ="0000000000000100100000101101"  and (IF_ID_Rsrc1=ID_EX_Rdst  or IF_ID_Rsrc2=ID_EX_Rdst )) else
+                    '0' when (CS_EX_MEM="0000000000000100100000101101"  and (IF_ID_Rsrc1=EX_MEM_Rdst or IF_ID_Rsrc2=EX_MEM_Rdst)) else
                     '1' ;
     
-    freeze<=        '1' when ((CS_ID_EX ="0000000000000100100000101101" or CS_ID_EX ="0000000000000100000000000001") and (IF_ID_Rsrc1=ID_EX_Rdst  or IF_ID_Rsrc2=ID_EX_Rdst )) else
-                    '1' when ((CS_EX_MEM="0000000000000100100000101101" or CS_EX_MEM="0000000000000100000000000001") and (IF_ID_Rsrc1=EX_MEM_Rdst or IF_ID_Rsrc2=EX_MEM_Rdst)) else
+    freeze<=        '1' when (CS_ID_EX ="0000000000000100100000101101"  and (IF_ID_Rsrc1=ID_EX_Rdst  or IF_ID_Rsrc2=ID_EX_Rdst )) else
+                    '1' when (CS_EX_MEM="0000000000000100100000101101"  and (IF_ID_Rsrc1=EX_MEM_Rdst or IF_ID_Rsrc2=EX_MEM_Rdst)) else
                     '0' ;
     
-    ID_EX_FLUSH<=   '1' when ((CS_ID_EX ="0000000000000100100000101101" or CS_ID_EX ="0000000000000100000000000001") and (IF_ID_Rsrc1=ID_EX_Rdst  or IF_ID_Rsrc2=ID_EX_Rdst )) else
-                    '1' when ((CS_EX_MEM="0000000000000100100000101101" or CS_EX_MEM="0000000000000100000000000001") and (IF_ID_Rsrc1=EX_MEM_Rdst or IF_ID_Rsrc2=EX_MEM_Rdst)) else
+    ID_EX_FLUSH<=   '1' when (CS_ID_EX ="0000000000000100100000101101"  and (IF_ID_Rsrc1=ID_EX_Rdst  or IF_ID_Rsrc2=ID_EX_Rdst )) else
+                    '1' when (CS_EX_MEM="0000000000000100100000101101"  and (IF_ID_Rsrc1=EX_MEM_Rdst or IF_ID_Rsrc2=EX_MEM_Rdst)) else
                     '0' ;
 
 end HDU; 
