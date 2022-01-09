@@ -221,7 +221,16 @@ BEGIN
 		stage2_reg(87 DOWNTO 72) WHEN OTHERS;--imm(16)
     
 	--Forwarding Unit              ----Rsrc1_index           ----Rsrc2_index           ---Rdst_index
-	FU : entity work.FU PORT MAP (stage2_reg(92 DOWNTO 90), stage2_reg(95 DOWNTO 93),stage3_reg(39 DOWNTO 37), stage4_reg(39 DOWNTO 37),MUX3_SEL,MUX2_SEL);	
+	FU : entity work.FU PORT MAP (
+		stage2_reg(92 DOWNTO 90), 
+		stage2_reg(95 DOWNTO 93),
+		stage3_reg(39 DOWNTO 37), 
+		stage4_reg(39 DOWNTO 37),
+		MUX3_SEL,
+		MUX2_SEL,
+		stage3_reg(14),
+		stage4_reg(14)
+		);	
 
 	--MUX3(OPERAND 1)
 	WITH MUX3_SEL SELECT
