@@ -29,6 +29,8 @@ architecture a_inst_memory of inst_memory is
       x"000f",
       x"2344",
       x"000f",
+      x"c611",
+      x"018e",
       others => (others=>'0')
   );
 begin

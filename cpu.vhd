@@ -35,6 +35,8 @@ ARCHITECTURE cpu OF cpu IS
 	SIGNAL MUX1_RESULT   :    std_logic_vector(15 DOWNTO 0);
 	SIGNAL ID_EX_FLUSH   :  STD_LOGIC;
 	SIGNAL IF_ID_enable  :  STD_LOGIC;
+	SIGNAL hazard_freeze :  STD_LOGIC;
+	SIGNAL WHO_FRREZED   :  STD_LOGIC;
 
 	-- flag register signals:
 	signal flag_in : std_logic_vector(3 downto 0);
@@ -185,7 +187,10 @@ BEGIN
 		not_clk,
 		rst,
 		stage1_reg(4 DOWNTO 0), --opcode
-		freeze --freeze
+		freeze ,  --freeze
+		hazard_freeze,
+		WHO_FRREZED,
+		WHO_FRREZED
 		);
  
 	HAZARD_DETECTION_UNIT: ENTITY WORK.HDU PORT MAP (
@@ -198,7 +203,7 @@ BEGIN
 		stage3_reg(39 DOWNTO 37), 	                                    --outRdst_index  EX/MEM
 		stage4_reg(39 DOWNTO 37), 	                                    --outRdst_index  MEM/WB
 		IF_ID_enable,
-		freeze,
+		hazard_freeze,
 		ID_EX_FLUSH
 	    );	
 

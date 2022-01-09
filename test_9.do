@@ -3,7 +3,15 @@ add wave -position end  sim:/cpu/clk
 add wave -position end  sim:/cpu/reg_file/rst
 add wave -position end  sim:/cpu/inst_memo
 add wave -position end  sim:/cpu/memo_addr
-add wave -position end  sim:/cpu/memo_data16
+add wave -position end  sim:/cpu/alu_operand1
+add wave -position end  sim:/cpu/alu_operand2
+add wave -position end  sim:/cpu/alu_result
+add wave -position end  sim:/cpu/IF_ID_enable
+add wave -position end  sim:/cpu/freeze
+add wave -position end  sim:/cpu/ID_EX_FLUSH
+add wave -position end  sim:/cpu/pc_reg/current_pc
+add wave -position end  sim:/cpu/pc_reg/next_addr
+
 add wave -position end  sim:/cpu/reg_file/reg0
 add wave -position end  sim:/cpu/reg_file/reg1
 add wave -position end  sim:/cpu/reg_file/reg2
@@ -13,6 +21,10 @@ add wave -position end  sim:/cpu/reg_file/reg5
 add wave -position end  sim:/cpu/reg_file/reg6
 add wave -position end  sim:/cpu/reg_file/reg7
 
+add wave -position end  sim:/cpu/stage1_reg
+add wave -position end  sim:/cpu/stage2_reg
+add wave -position end  sim:/cpu/stage3_reg
+add wave -position end  sim:/cpu/stage4_reg
 force -freeze sim:/cpu/clk 0 0, 1 {50 ps} -r 100
 force -freeze sim:/cpu/reg_file/rst 1 0
 run
@@ -20,21 +32,27 @@ force -freeze sim:/cpu/reg_file/rst 0 0
 
 force -freeze sim:/cpu/reg_file/reg1 X\"1\" 0
 force -freeze sim:/cpu/reg_file/reg2 X\"2\" 0
-force -freeze sim:/cpu/inst_memo 00000000000000000010010010000001 0
+force -freeze sim:/cpu/in_port X\"3\" 0
+#force -freeze sim:/cpu/inst_memo 00000000000000000010010010000001 0
 run
-force -freeze sim:/cpu/inst_memo 00000000000011110000000111000011 0
+#force -freeze sim:/cpu/inst_memo 00000000000011110000000111000011 0
 run
-force -freeze sim:/cpu/inst_memo 00000000000000000000001000000010 0
+#force -freeze sim:/cpu/inst_memo 00000000000000000000001000000010 0
 run
-force -freeze sim:/cpu/inst_memo 00000000000011110010010000000101 0
+#force -freeze sim:/cpu/inst_memo 00000000000011110010010000000101 0
 run
-force -freeze sim:/cpu/inst_memo 00000000000011110010001100000100 0
+#force -freeze sim:/cpu/inst_memo 00000000000011110010001100000100 0
 run
-force -freeze sim:/cpu/inst_memo 00000000000000001100011000010001 0
+
+#force -freeze sim:/cpu/inst_memo 00000000000000001100011000010001 0
 run
-force -freeze sim:/cpu/inst_memo 00000000000000000000000110001110 0
-run 
-force -freeze sim:/cpu/inst_memo 00000000000000000100111000010001 0
+
+#force -freeze sim:/cpu/inst_memo 00000000000000000000000110001110 0
+run
+
+
+
+run
 run
 run
 run
