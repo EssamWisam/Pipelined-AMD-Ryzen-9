@@ -1,7 +1,6 @@
 # Pipelined-AMD-Ryzen-9
 This is a simple pipelined processor that serves as the project for the Computer Architecture course (CMP 3010) taught at Cairo University.
 
-
 ## Implemented Instructions
 ### ☝️ One Operand
 ```
@@ -39,5 +38,4 @@ JC Rdst
 JMP  Rdst
 ```
 
-
-## For more info about the architectural desicions we took, check <a href="https://bit.ly/3JFTedJ">this</a> along with the attached PDFs.
+### For the design and more info about the architectural desicions we took, check <a href="https://bit.ly/3JFTedJ">this</a> along with the attached PDFs.
