@@ -38,4 +38,4 @@ JC Rdst
 JMP  Rdst
 ```
 
-### For the design and more info about the architectural desicions we took, check <a href="https://bit.ly/3JFTedJ">this</a> along with the attached PDFs.
+### For the design and more info about the architectural desicions we took, check <a href="https://bit.ly/3JFTedJ">this</a> along with the attached PDFs (Design Folder).
